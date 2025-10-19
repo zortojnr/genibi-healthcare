@@ -21,7 +21,7 @@ function friendlyAuthError(code?: string, fallback?: string) {
 }
 
 export default function Login() {
-  const { user, loading, signInGoogle, signUpEmail, signInEmail, resetPassword } = useAuth()
+  const { user, loading, signInGoogle, signInEmail, resetPassword } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -83,23 +83,6 @@ export default function Login() {
     }
   }
 
-  async function handleEmailSignup(e?: FormEvent) {
-    e?.preventDefault()
-    setMsg(null); setMsgType('info')
-    if (!email || !password) { setMsg('Enter email and password'); setMsgType('error'); return }
-    if (password.length < 6) { setMsg('Use a stronger password (6+ characters).'); setMsgType('error'); return }
-    try {
-      setPending(true)
-      await signUpEmail(email, password)
-      setMsg('Account created. Welcome!')
-      setMsgType('success')
-    } catch (e: any) {
-      setMsg(friendlyAuthError(e?.code, e?.message))
-      setMsgType('error')
-    } finally {
-      setPending(false)
-    }
-  }
 
   function handleGuestLogin() {
     setMsg(null); setMsgType('info')
