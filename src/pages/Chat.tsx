@@ -43,7 +43,12 @@ export default function Chat() {
         {showAssistant && (
           <>
             <div className="px-6 py-4 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-slate-700">AI Assistant</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-medium text-slate-700">AI Assistant</h2>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full border ${isGeminiEnabled ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                  {isGeminiEnabled ? 'AI: Live' : 'AI: Disabled'}
+                </span>
+              </div>
               <div className="flex items-center gap-2">
                 <button aria-label="Close assistant" onClick={() => setShowAssistant(false)} className="text-xs px-3 py-1 rounded-full border bg-white text-slate-700">Close</button>
               </div>
