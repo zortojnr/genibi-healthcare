@@ -16,8 +16,9 @@ export async function generateReply(input: string, history: ChatMessage[] = []):
   const model = genAI.getGenerativeModel({ model: modelId })
 
   // Generate a response using prior turns + current input
+  const toRole = (r: 'user' | 'assistant') => (r === 'assistant' ? 'model' : 'user')
   const contents = [
-    ...history.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
+    ...history.map(m => ({ role: toRole(m.role), parts: [{ text: m.content }] })),
     { role: 'user', parts: [{ text: input }] },
   ]
 
