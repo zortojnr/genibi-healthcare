@@ -15,12 +15,13 @@ export async function generateReply(input: string, history: ChatMessage[] = []):
   const genAI = new GoogleGenerativeAI(apiKey!)
   const model = genAI.getGenerativeModel({ model: modelId })
 
-  // Build a lightweight chat session with prior turns
-  const chat = model.startChat({
-    history: history.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
-  })
+  // Generate a response using prior turns + current input
+  const contents = [
+    ...history.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
+    { role: 'user', parts: [{ text: input }] },
+  ]
 
-  const result = await chat.sendMessage(input)
+  const result = await model.generateContent({ contents })
   const text = result.response.text()
   return text.trim()
 }
