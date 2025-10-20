@@ -1,18 +1,28 @@
-import { useState } from 'react'
-import { addDoc, collection } from 'firebase/firestore'
+import { useEffect, useState } from 'react'
+import { addDoc, collection, getDocs } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../contexts/AuthContext'
 
-const resources = [
-  { name: 'Campus Psychologist', type: 'Psychologist', link: 'https://example.com/psychologist' },
-  { name: 'Peer Support Group', type: 'Peer Group', link: 'https://example.com/peer' },
-  { name: 'Rehab Center', type: 'Rehab', link: 'https://example.com/rehab' },
-]
+interface Referral { name: string; type: string; link: string; tags?: string[] }
 
 export default function Referrals() {
   const { user } = useAuth()
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [refs, setRefs] = useState<Referral[]>([])
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const snap = await getDocs(collection(db, 'referrals'))
+        const items: Referral[] = []
+        snap.forEach(d => items.push(d.data() as Referral))
+        setRefs(items)
+      } catch (e) {
+        console.error('Failed to load referrals from Firestore', e)
+      }
+    })()
+  }, [])
 
   async function submitAnonymous() {
     setSaving(true)
@@ -34,12 +44,16 @@ export default function Referrals() {
         <h2 className="text-xl font-semibold text-slate-800">Referral Hub</h2>
         <p className="text-sm text-slate-600">Connect to psychologists, peer groups, and rehab centers.</p>
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {resources.map(r => (
-            <a key={r.name} href={r.link} target="_blank" className="block rounded-xl border bg-white p-4">
-              <div className="text-xs text-slate-500 uppercase">{r.type}</div>
-              <div className="mt-1 font-medium text-slate-800">{r.name}</div>
-            </a>
-          ))}
+          {refs.length === 0 ? (
+            <div className="col-span-full text-sm text-slate-600">No referrals available yet.</div>
+          ) : (
+            refs.map(r => (
+              <a key={r.name} href={r.link} target="_blank" className="block rounded-xl border bg-white p-4">
+                <div className="text-xs text-slate-500 uppercase">{r.type}</div>
+                <div className="mt-1 font-medium text-slate-800">{r.name}</div>
+              </a>
+            ))
+          )}
         </div>
       </div>
 

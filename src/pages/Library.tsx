@@ -4,14 +4,8 @@ import { db } from '../lib/firebase'
 
 interface Resource { title: string; type: 'article'|'video'|'audio'; link: string; tags?: string[] }
 
-const fallback: Resource[] = [
-  { title: 'Breathing for Calm (3 min)', type: 'audio', link: 'https://example.com/breathing', tags: ['anxiety', 'calm'] },
-  { title: 'Focus Reset: Pomodoro Basics', type: 'article', link: 'https://example.com/focus', tags: ['focus', 'study'] },
-  { title: 'Understanding Stress', type: 'video', link: 'https://example.com/stress', tags: ['stress'] },
-]
-
 export default function Library() {
-  const [resources, setResources] = useState<Resource[]>(fallback)
+  const [resources, setResources] = useState<Resource[]>([])
   const [q, setQ] = useState('')
   const [type, setType] = useState<'all'|'article'|'video'|'audio'>('all')
 
@@ -21,9 +15,9 @@ export default function Library() {
         const snap = await getDocs(collection(db, 'resources'))
         const items: Resource[] = []
         snap.forEach(d => items.push(d.data() as Resource))
-        if (items.length) setResources(items)
+        setResources(items)
       } catch (e) {
-        console.warn('Using fallback resources', e)
+        console.error('Failed to load resources from Firestore', e)
       }
     })()
   }, [])
@@ -48,13 +42,17 @@ export default function Library() {
           </select>
         </div>
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(r => (
-            <a key={r.title} href={r.link} target="_blank" className="block rounded-xl border bg-white p-4">
-              <div className="text-xs text-slate-500 uppercase">{r.type}</div>
-              <div className="mt-1 font-medium text-slate-800">{r.title}</div>
-              {r.tags && <div className="mt-2 text-xs text-slate-500">{r.tags.join(', ')}</div>}
-            </a>
-          ))}
+          {filtered.length === 0 ? (
+            <div className="col-span-full text-sm text-slate-600">No resources available yet.</div>
+          ) : (
+            filtered.map(r => (
+              <a key={r.title} href={r.link} target="_blank" className="block rounded-xl border bg-white p-4">
+                <div className="text-xs text-slate-500 uppercase">{r.type}</div>
+                <div className="mt-1 font-medium text-slate-800">{r.title}</div>
+                {r.tags && <div className="mt-2 text-xs text-slate-500">{r.tags.join(', ')}</div>}
+              </a>
+            ))
+          )}
         </div>
       </div>
     </div>

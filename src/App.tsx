@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import NavBar from './components/NavBar'
 import Login from './pages/Login'
@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import Referrals from './pages/Referrals'
 import Demo from './pages/Demo'
 import type { ReactNode } from 'react'
+import { useEffect } from 'react'
 
 function Protected({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
@@ -28,12 +29,19 @@ function FullAccess({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
+
 export default function App() {
   const { user } = useAuth()
 
   return (
     <div className="min-h-screen">
       {user && <NavBar />}
+      <ScrollToTop />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
