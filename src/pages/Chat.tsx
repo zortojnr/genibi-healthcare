@@ -21,14 +21,9 @@ export default function Chat() {
     setMessages(prev => [...prev, userMsg])
     setPending(true)
     try {
-      if (!isGeminiEnabled) {
-        const reply: Message = { role: 'assistant', content: 'Live AI is not configured. Add VITE_GEMINI_API_KEY to enable.' }
-        setMessages(prev => [...prev, reply])
-      } else {
-        const replyText = await generateReply(text, history)
-        const reply: Message = { role: 'assistant', content: replyText }
-        setMessages(prev => [...prev, reply])
-      }
+      const replyText = await generateReply(text, history)
+      const reply: Message = { role: 'assistant', content: replyText }
+      setMessages(prev => [...prev, reply])
     } catch (err) {
       const reply: Message = { role: 'assistant', content: 'I’m having trouble responding right now. Please try again.' }
       setMessages(prev => [...prev, reply])
@@ -72,7 +67,7 @@ export default function Chat() {
           </>
         )}
       </div>
-      <p className="text-xs text-slate-500 mt-3">Note: Genibi AI is powered by Gemini. Add VITE_GEMINI_API_KEY in .env to enable live responses.</p>
+      <p className="text-xs text-slate-500 mt-3">Note: Genibi AI calls are routed via a secure server. Configure <code>GEMINI_API_KEY</code> (and optional <code>GEMINI_MODEL</code>) in your server environment.</p>
     </div>
   )
 }

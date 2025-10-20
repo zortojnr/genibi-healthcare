@@ -9,7 +9,7 @@ import {
   demoLibraryItems,
 } from "../lib/demoData"
 import { Link } from "react-router-dom"
-import { isGeminiEnabled, generateReply } from "../lib/genibi"
+import { generateReply } from "../lib/genibi"
 
 interface Message { role: 'user' | 'assistant'; content: string }
 function geminiStub(prompt: string): string {
@@ -35,10 +35,10 @@ export default function Demo() {
     setPending(true)
     try {
       let replyText: string
-      if (isGeminiEnabled) {
-        const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
-        replyText = await generateReply(history.map(h => h.content).join('\n'))
-      } else {
+      try {
+        const history = [...messages, userMsg]
+        replyText = await generateReply(prompt, history)
+      } catch (e) {
         replyText = geminiStub(prompt)
       }
       setMessages(prev => [...prev, { role: 'assistant', content: replyText }])
@@ -116,7 +116,7 @@ export default function Demo() {
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-medium text-slate-700">AI Assistant</h2>
                   <div className="flex items-center gap-2">
-                    <span className={`text-[10px] px-2 py-1 rounded-full border ${isGeminiEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{isGeminiEnabled ? 'Live' : 'Demo'}</span>
+                    <span className="text-[10px] px-2 py-1 rounded-full border bg-emerald-100 text-emerald-700">Live</span>
                     <button aria-label="Close assistant" onClick={() => setShowAssistant(false)} className="text-xs px-3 py-1 rounded-full border bg-white text-slate-700 hover:opacity-90">Close</button>
                   </div>
                 </div>
