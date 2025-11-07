@@ -13,7 +13,6 @@ const features = [
   { title: 'AI Chat Assistant', to: '/chat', emoji: '💬', color: 'bg-blue-50' },
   { title: 'Appointments (CFID)', to: '/appointments', emoji: '📅', color: 'bg-mint-50' },
   { title: 'Medication Tracker', to: '/medications', emoji: '💊', color: 'bg-lavender-50' },
-  { title: 'Vitals Log', to: '/vitals', emoji: '❤️', color: 'bg-mint-50' },
   { title: 'Mood Tracker', to: '/mood', emoji: '😊', color: 'bg-blue-50' },
   { title: 'E-Library', to: '/library', emoji: '📚', color: 'bg-lavender-50' },
   { title: 'Referrals', to: '/referrals', emoji: '🧑‍🤝‍🧑', color: 'bg-mint-50' },

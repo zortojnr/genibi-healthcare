@@ -17,12 +17,6 @@ export const demoMoodEntries = [
   { id: 4, date: "2025-10-18", mood: "Tired", score: 5 },
 ];
 
-export const demoVitals = [
-  { id: 1, metric: "Sleep", value: "7h 30m" },
-  { id: 2, metric: "Heart Rate", value: "68 bpm" },
-  { id: 3, metric: "Steps", value: "8,230" },
-];
-
 export const demoMedications = [
   { id: 1, name: "Vitamin D", dosage: "1000 IU", schedule: "Daily" },
   { id: 2, name: "Mindfulness Practice", dosage: "10 min", schedule: "Daily" },

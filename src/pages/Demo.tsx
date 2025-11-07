@@ -4,7 +4,6 @@ import {
   demoUser,
   demoAppointments,
   demoMoodEntries,
-  demoVitals,
   demoMedications,
   demoLibraryItems,
 } from "../lib/demoData"
@@ -14,16 +13,17 @@ import { generateReply } from "../lib/genibi"
 interface Message { role: 'user' | 'assistant'; content: string }
 function geminiStub(prompt: string): string {
   const normalized = prompt.toLowerCase()
-  if (normalized.includes('anxious')) return 'I hear you. Let’s try a 4-7-8 breathing exercise together. Inhale for 4, hold for 7, exhale for 8. You are safe.'
-  if (normalized.includes('focus')) return 'Focus drifts; that’s normal. Try the Pomodoro technique: 25 minutes of study, 5 minutes of rest. Want me to guide a session?'
-  if (normalized.includes('book')) return 'I can help you book a psychosocial support session. Tap Appointments to choose a date and time.'
-  return 'I’m here with you. Tell me how you’re feeling, and we’ll take it one step at a time.'
+  if (normalized.includes('sleep')) return 'Better sleep often starts with a routine: consistent bed times, limited screens 1 hour before bed, and a cool, dark room. Want a 7‑day sleep plan?'
+  if (normalized.includes('diet') || normalized.includes('nutrition')) return 'Aim for balanced meals: veggies, lean protein, whole grains, and healthy fats. Hydrate well and limit sugary drinks.'
+  if (normalized.includes('cold') || normalized.includes('flu')) return 'Rest, fluids, and OTC relief can help mild colds. Seek care if fever persists >3 days, breathing is hard, or symptoms worsen.'
+  if (normalized.includes('exercise')) return 'Start small: 20–30 minutes of moderate activity 3–4 days/week. Mix cardio with strength and add rest days.'
+  return 'I’m here to help with general health questions. Tell me what you need, and we’ll figure it out together.'
 }
-const quick = ['I feel anxious', "I can't focus", 'Book a session']
+const quick = ['How can I sleep better?', 'What is a balanced diet?', 'When to see a doctor?']
 
 export default function Demo() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hi, I’m Genibi AI. How can I support you today?' }
+    { role: 'assistant', content: 'Hi, I’m Genibi AI. How can I help with your health today?' }
   ])
   const [input, setInput] = useState('')
   const [pending, setPending] = useState(false)
@@ -78,17 +78,7 @@ export default function Demo() {
                 <div className="mt-2 inline-flex items-center px-2 py-1 rounded-md bg-emerald-100 text-emerald-700 text-xs">Demo Mode</div>
               </div>
 
-              <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl">
-                <h2 className="text-sm font-medium text-slate-700">Vitals</h2>
-                <ul className="mt-3 space-y-2">
-                  {demoVitals.map(v => (
-                    <li key={v.id} className="flex justify-between text-sm">
-                      <span className="text-slate-600">{v.metric}</span>
-                      <span className="font-medium text-slate-900">{v.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Vitals section removed per de-scope */}
 
               <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl">
                 <h2 className="text-sm font-medium text-slate-700">Medications</h2>

@@ -8,7 +8,6 @@ import Chat from './pages/Chat'
 import Appointments from './pages/Appointments'
 import MoodTracker from './pages/MoodTracker'
 import Medications from './pages/Medications'
-import Vitals from './pages/Vitals'
 import Library from './pages/Library'
 import Profile from './pages/Profile'
 import Referrals from './pages/Referrals'
@@ -51,7 +50,6 @@ export default function App() {
         <Route path="/appointments" element={<Protected><FullAccess><Appointments /></FullAccess></Protected>} />
         <Route path="/mood" element={<Protected><FullAccess><MoodTracker /></FullAccess></Protected>} />
         <Route path="/medications" element={<Protected><FullAccess><Medications /></FullAccess></Protected>} />
-        <Route path="/vitals" element={<Protected><FullAccess><Vitals /></FullAccess></Protected>} />
         <Route path="/referrals" element={<Protected><Referrals /></Protected>} />
         <Route path="/profile" element={<Protected><Profile /></Protected>} />
         <Route path="/demo" element={<Demo />} />

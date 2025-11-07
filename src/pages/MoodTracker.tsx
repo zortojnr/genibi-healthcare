@@ -39,9 +39,14 @@ export default function MoodTracker() {
 
   async function save() {
     if (!uid) return
+    const today = new Date().toISOString().slice(0,10)
+    // Prevent duplicate entry for the same day
+    if (moods.some(m => m.date === today)) {
+      return
+    }
     setSaving(true)
     const entry: MoodEntry = {
-      date: new Date().toISOString().slice(0,10),
+      date: today,
       score,
       note: note.trim() || undefined,
     }

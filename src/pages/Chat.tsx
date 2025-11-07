@@ -4,12 +4,16 @@ import { isGeminiEnabled, generateReply } from '../lib/genibi'
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
-const quick = ['I feel anxious', "I can't focus", 'Book a session']
+const quick = [
+  'How can I improve sleep quality?',
+  'What are balanced diet tips?',
+  'When should I see a doctor?'
+]
 
 export default function Chat() {
   // removed unused navigate
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hi, I’m Genibi AI. How can I support you today?' }
+    { role: 'assistant', content: 'Hi, I’m Genibi AI. How can I help with your health today?' }
   ])
   const [input, setInput] = useState('')
   const [showAssistant, setShowAssistant] = useState(true)
