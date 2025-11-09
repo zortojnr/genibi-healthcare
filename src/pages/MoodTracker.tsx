@@ -4,7 +4,14 @@ import { db } from '../lib/firebase'
 import { useAuth } from '../contexts/AuthContext'
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts'
 
-interface MoodEntry { date: string; score: number; note?: string }
+interface MoodEntry { 
+  date: string; 
+  score: number; 
+  note?: string;
+  mood_direction?: string;
+  mood_intensity?: number;
+  mood_source?: string;
+}
 
 export default function MoodTracker() {
   const { user } = useAuth()
@@ -12,6 +19,11 @@ export default function MoodTracker() {
   const [note, setNote] = useState('')
   const [moods, setMoods] = useState<MoodEntry[]>([])
   const [saving, setSaving] = useState(false)
+  
+  // New mood tracking fields
+  const [moodDirection, setMoodDirection] = useState<string>('Neutral')
+  const [moodIntensity, setMoodIntensity] = useState<number>(3)
+  const [moodSource, setMoodSource] = useState<string>('Not sure')
 
   const uid = user?.uid
 
@@ -27,7 +39,14 @@ export default function MoodTracker() {
       const items: MoodEntry[] = []
       snap.forEach(d => {
         const data = d.data() as any
-        items.push({ date: data.date, score: data.score, note: data.note })
+        items.push({ 
+          date: data.date, 
+          score: data.score, 
+          note: data.note,
+          mood_direction: data.mood_direction,
+          mood_intensity: data.mood_intensity,
+          mood_source: data.mood_source
+        })
       })
       setMoods(items.reverse())
     } catch (e) {
@@ -49,6 +68,9 @@ export default function MoodTracker() {
       date: today,
       score,
       note: note.trim() || undefined,
+      mood_direction: moodDirection,
+      mood_intensity: moodIntensity,
+      mood_source: moodSource
     }
     try {
       await addDoc(collection(db, 'moods'), { ...entry, userId: uid })
@@ -76,6 +98,33 @@ export default function MoodTracker() {
           <div className="flex justify-between text-xs text-slate-500">
             <span>😞 1</span><span>🙂 3</span><span>😊 5</span>
           </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="text-sm text-slate-700 block mb-2">Mood direction</label>
+          <select value={moodDirection} onChange={e=>setMoodDirection(e.target.value)} className="w-full px-3 py-2 rounded-lg border bg-white">
+            <option value="Positive">Positive</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Negative">Negative</option>
+          </select>
+        </div>
+
+        <div className="mt-4">
+          <label className="text-sm text-slate-700 block mb-2">Mood intensity</label>
+          <input type="range" min={1} max={5} value={moodIntensity} onChange={e=>setMoodIntensity(Number(e.target.value))} className="w-full" />
+          <div className="flex justify-between text-xs text-slate-500">
+            <span>1 - Very Low</span><span>3 - Moderate</span><span>5 - Very High</span>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="text-sm text-slate-700 block mb-2">Mood source</label>
+          <select value={moodSource} onChange={e=>setMoodSource(e.target.value)} className="w-full px-3 py-2 rounded-lg border bg-white">
+            <option value="My thoughts/internal feelings">My thoughts/internal feelings</option>
+            <option value="Someone else's actions or words">Someone else's actions or words</option>
+            <option value="Environment / surroundings">Environment / surroundings</option>
+            <option value="Not sure">Not sure</option>
+          </select>
         </div>
 
         <textarea value={note} onChange={e=>setNote(e.target.value)} placeholder="Add a note (optional)" className="mt-4 w-full px-3 py-2 rounded-lg border bg-white" />
