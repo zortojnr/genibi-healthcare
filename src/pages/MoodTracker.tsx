@@ -133,28 +133,36 @@ export default function MoodTracker() {
           onClick={save} 
           disabled={saving} 
           className={`
-            mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 ease-in-out
+            mt-4 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ease-in-out
+            min-w-[140px] min-h-[48px] flex items-center justify-center gap-2
+            shadow-md hover:shadow-lg active:shadow-sm
+            transform hover:scale-105 active:scale-95
             ${saving 
-              ? 'bg-mint-400 cursor-not-allowed opacity-75' 
-              : 'bg-mint-500 hover:bg-mint-600 hover:shadow-lg hover:scale-105 active:bg-mint-700 active:scale-95'
+              ? 'bg-gradient-to-r from-mint-400 to-mint-500 cursor-not-allowed opacity-80 shadow-inner' 
+              : 'bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-600 hover:to-mint-700 active:from-mint-700 active:to-mint-800'
             }
-            focus:outline-none focus:ring-4 focus:ring-mint-300 focus:ring-opacity-50
-            disabled:transform-none disabled:shadow-none
-            min-w-[120px] flex items-center justify-center
+            focus:outline-none focus:ring-4 focus:ring-mint-300 focus:ring-opacity-60
+            disabled:transform-none disabled:shadow-none disabled:opacity-60
+            border border-mint-600/20 hover:border-mint-600/30
           `}
           aria-label={saving ? 'Saving mood entry' : 'Save mood entry'}
           aria-busy={saving}
         >
           {saving ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Saving...
+              <span className="font-medium">Saving...</span>
             </>
           ) : (
-            'Save mood'
+            <>
+              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="font-medium">Save mood</span>
+            </>
           )}
         </button>
       </div>
