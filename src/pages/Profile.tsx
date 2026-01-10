@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { updateProfile } from 'firebase/auth'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { z } from 'zod'
 
 // --- Types ---
 interface UserProfileData {
@@ -17,6 +18,13 @@ interface UserProfileData {
   location?: string;
   createdAt?: string;
 }
+
+const profileSchema = z.object({
+  displayName: z.string().min(2, "Name must be at least 2 characters").max(50, "Name too long"),
+  phone: z.string().max(20, "Phone number too long").optional().or(z.literal('')),
+  location: z.string().max(100, "Location too long").optional().or(z.literal('')),
+  bio: z.string().max(500, "Bio must be less than 500 characters").optional().or(z.literal(''))
+})
 
 interface Appointment {
   id: string;
@@ -140,6 +148,15 @@ export default function Profile() {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+    
+    // Validate
+    const result = profileSchema.safeParse(editForm)
+    if (!result.success) {
+      const errorMsg = result.error.issues[0].message
+      setMsg({ type: 'error', text: errorMsg })
+      return
+    }
+
     setSaving(true)
     setMsg(null)
     try {
@@ -262,7 +279,8 @@ export default function Profile() {
           transition={{ duration: 0.2 }}
         >
           {msg && (
-            <div className={`mb-4 p-3 rounded-lg text-sm ${msg.type === 'error' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+            <div className={`mb-4 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+              <span>{msg.type === 'error' ? '⚠️' : '✅'}</span>
               {msg.text}
             </div>
           )}

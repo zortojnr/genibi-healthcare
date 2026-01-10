@@ -20,6 +20,8 @@ export default function MoodTracker() {
   const [note, setNote] = useState('')
   const [moods, setMoods] = useState<MoodEntry[]>([])
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [msg, setMsg] = useState<{type: 'success' | 'error', text: string} | null>(null)
   
   // New mood tracking fields
   const [moodDirection, setMoodDirection] = useState<string>('Neutral')
@@ -52,6 +54,7 @@ export default function MoodTracker() {
         })
       })
       setMoods(items.reverse())
+      setLoading(false)
 
       // Realtime listener
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -73,6 +76,8 @@ export default function MoodTracker() {
       return unsubscribe
     } catch (e) {
       console.warn('Mood fetch failed, showing local data only', e)
+      setMsg({ type: 'error', text: 'Failed to load mood history. Please try refreshing.' })
+      setLoading(false)
     }
   }
 
@@ -84,9 +89,11 @@ export default function MoodTracker() {
 
   async function save() {
     if (!uid) return
+    setMsg(null)
     const today = new Date().toISOString().slice(0,10)
     // Prevent duplicate entry for the same day
     if (moods.some(m => m.date === today)) {
+      setMsg({ type: 'error', text: 'You have already logged your mood for today.' })
       return
     }
     setSaving(true)
@@ -100,10 +107,12 @@ export default function MoodTracker() {
     }
     try {
       await addDoc(collection(db, 'moods'), { ...entry, userId: uid })
-      setMoods(prev => [...prev, entry])
+      // setMoods(prev => [...prev, entry]) // No longer needed with onSnapshot
       setNote('')
+      setMsg({ type: 'success', text: 'Mood entry saved successfully!' })
     } catch (e) {
       console.error('Save mood failed', e)
+      setMsg({ type: 'error', text: 'Failed to save mood. Please try again.' })
     } finally {
       setSaving(false)
     }
@@ -117,7 +126,14 @@ export default function MoodTracker() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="rounded-2xl border bg-white/70 backdrop-blur p-6">
         <h2 className="text-xl font-semibold text-slate-800">Mood Tracker</h2>
-        <p className="text-sm text-slate-600">How are you feeling today?</p>
+        <p className="text-sm text-slate-600 mb-4">How are you feeling today?</p>
+
+        {msg && (
+          <div className={`mb-4 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+            <span>{msg.type === 'error' ? '⚠️' : '✅'}</span>
+            {msg.text}
+          </div>
+        )}
 
         <div className="mt-4">
           <input type="range" min={1} max={5} value={score} onChange={e=>setScore(Number(e.target.value))} className="w-full" />
@@ -195,16 +211,30 @@ export default function MoodTracker() {
 
       <div className="rounded-2xl border bg-white/70 backdrop-blur p-6 mt-8">
         <h3 className="font-medium text-slate-800">Recent trend</h3>
-        <div className="h-64 mt-4">
-          <ResponsiveContainer>
-            <LineChart data={data}>
-              <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-              <YAxis domain={[1,5]} tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Line type="monotone" dataKey="score" stroke="#3F8CFF" strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        {loading ? (
+          <div className="h-64 mt-4 flex items-center justify-center text-slate-400">
+            <svg className="animate-spin h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+        ) : moods.length === 0 ? (
+          <div className="h-64 mt-4 flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">
+            <span className="text-4xl mb-2">📊</span>
+            <p>No mood data yet. Start tracking today!</p>
+          </div>
+        ) : (
+          <div className="h-64 mt-4">
+            <ResponsiveContainer>
+              <LineChart data={data}>
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                <YAxis domain={[1,5]} tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line type="monotone" dataKey="score" stroke="#3F8CFF" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
     </div>
   )
