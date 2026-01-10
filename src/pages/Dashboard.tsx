@@ -15,12 +15,11 @@ const features = [
   { title: 'Medication Tracker', to: '/medications', emoji: '💊', color: 'bg-lavender-50' },
   { title: 'Mood Tracker', to: '/mood', emoji: '😊', color: 'bg-blue-50' },
   { title: 'E-Library', to: '/library', emoji: '📚', color: 'bg-lavender-50' },
-  { title: 'Referrals', to: '/referrals', emoji: '🧑‍🤝‍🧑', color: 'bg-mint-50' },
 ]
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const name = user?.displayName || (user?.isAnonymous ? 'Guest' : 'Friend')
+  const name = user?.displayName || 'Friend'
   const quote = quotes[Math.floor(Math.random() * quotes.length)]
 
   return (

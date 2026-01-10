@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import type { User } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
@@ -42,11 +42,6 @@ function ensureEnabled() {
 export async function signInWithGoogle() {
   ensureEnabled()
   await signInWithPopup(auth, googleProvider)
-}
-
-export async function signInGuest() {
-  ensureEnabled()
-  await signInAnonymously(auth)
 }
 
 export async function signUpWithEmail(email: string, password: string) {

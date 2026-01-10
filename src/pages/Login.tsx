@@ -1,7 +1,8 @@
-﻿import { motion } from "framer-motion"
+import { motion } from "framer-motion"
 import { useAuth } from "../contexts/AuthContext"
 import { useEffect, useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
+import { ADMIN_EMAIL } from "../lib/admin"
 
 function friendlyAuthError(code?: string, fallback?: string) {
   switch (code) {
@@ -32,7 +33,15 @@ export default function Login() {
   const [introLoading, setIntroLoading] = useState(true)
 
   useEffect(() => { const t = setTimeout(() => setIntroLoading(false), 1200); return () => clearTimeout(t) }, [])
-  useEffect(() => { if (!loading && user) navigate('/') }, [loading, user, navigate])
+  useEffect(() => { 
+    if (!loading && user) {
+      if (user.email === ADMIN_EMAIL) {
+        navigate('/admin')
+      } else {
+        navigate('/') 
+      }
+    }
+  }, [loading, user, navigate])
 
   async function handleGoogleLogin() {
     setMsg(null); setMsgType('info')
@@ -81,12 +90,6 @@ export default function Login() {
     } finally {
       setPending(false)
     }
-  }
-
-
-  function handleGuestLogin() {
-    setMsg(null); setMsgType('info')
-    navigate('/demo')
   }
 
   if (introLoading) {
@@ -150,7 +153,6 @@ export default function Login() {
               {pending && (<span className="inline-block h-4 w-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />)}
               Login
             </button>
-            <button type="button" onClick={handleGuestLogin} disabled={pending} className="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-700 bg-white transition-opacity transition-shadow duration-200 hover:opacity-90 hover:shadow-sm active:scale-[.99] disabled:opacity-60">Continue as guest</button>
           </div>
 
           {/* Forgot password link */}

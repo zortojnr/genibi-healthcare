@@ -20,8 +20,10 @@ export default function Appointments() {
         type,
         CFID_reference: ref,
         status: 'pending',
+        bookedAt: new Date().toISOString()
       })
       setDate('')
+      alert("Appointment has been booked. Your request is being processed and you will be contacted.")
     } catch (e) {
       console.error('Failed to book appointment', e)
     } finally {

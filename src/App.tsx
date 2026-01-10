@@ -10,8 +10,9 @@ import MoodTracker from './pages/MoodTracker'
 import Medications from './pages/Medications'
 import Library from './pages/Library'
 import Profile from './pages/Profile'
-import Referrals from './pages/Referrals'
-import Demo from './pages/Demo'
+// import Referrals from './pages/Referrals' // Removed from user view
+import AdminDashboard from './pages/AdminDashboard'
+import { ADMIN_EMAIL } from './lib/admin'
 import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 
@@ -25,6 +26,13 @@ function Protected({ children }: { children: ReactNode }) {
 function FullAccess({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   if (user?.isAnonymous) return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+function AdminRoute({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="p-6 text-center text-slate-600">Loading...</div>
+  if (!user || user.email !== ADMIN_EMAIL) return <Navigate to="/" replace />
   return <>{children}</>
 }
 
@@ -50,9 +58,9 @@ export default function App() {
         <Route path="/appointments" element={<Protected><FullAccess><Appointments /></FullAccess></Protected>} />
         <Route path="/mood" element={<Protected><FullAccess><MoodTracker /></FullAccess></Protected>} />
         <Route path="/medications" element={<Protected><FullAccess><Medications /></FullAccess></Protected>} />
-        <Route path="/referrals" element={<Protected><Referrals /></Protected>} />
+        {/* <Route path="/referrals" element={<Protected><Referrals /></Protected>} /> */}
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/profile" element={<Protected><Profile /></Protected>} />
-        <Route path="/demo" element={<Demo />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>

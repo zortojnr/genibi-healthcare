@@ -11,6 +11,7 @@ interface MoodEntry {
   mood_direction?: string;
   mood_intensity?: number;
   mood_source?: string;
+  analysis?: string;
 }
 
 export default function MoodTracker() {
