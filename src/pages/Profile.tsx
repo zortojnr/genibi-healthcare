@@ -230,28 +230,28 @@ export default function Profile() {
     return { totalApts, upcomingApts, avgMood }
   }, [appointments, moods])
 
-  if (loading) return <div className="flex h-96 items-center justify-center text-slate-500">Loading profile...</div>
+  if (loading) return <div className="flex h-96 items-center justify-center text-slate-500 dark:text-slate-400">Loading profile...</div>
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border p-6 mb-6 flex flex-col md:flex-row gap-6 items-center md:items-start relative overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border dark:border-slate-700 p-6 mb-6 flex flex-col md:flex-row gap-6 items-center md:items-start relative overflow-hidden transition-colors">
         <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-500 to-indigo-600 -z-0" />
         
         <div className="relative z-10 mt-8 md:mt-4">
           <div className="relative group">
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-md bg-slate-200 overflow-hidden">
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-md bg-slate-200 dark:bg-slate-700 overflow-hidden">
               {profileData.photoURL ? (
                 <img src={profileData.photoURL} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400">
+                <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500">
                   <Icons.User />
                 </div>
               )}
             </div>
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border text-slate-600 hover:text-blue-600 transition opacity-0 group-hover:opacity-100"
+              className="absolute bottom-0 right-0 bg-white dark:bg-slate-700 p-2 rounded-full shadow-md border dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition opacity-0 group-hover:opacity-100"
               title="Change Photo"
             >
               <Icons.Camera />
@@ -261,19 +261,19 @@ export default function Profile() {
         </div>
 
         <div className="flex-1 text-center md:text-left pt-0 md:pt-12 z-10">
-          <h1 className="text-2xl font-bold text-slate-900">{profileData.displayName || 'User'}</h1>
-          <p className="text-slate-500">{profileData.email}</p>
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-2 text-sm text-slate-600">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{profileData.displayName || 'User'}</h1>
+          <p className="text-slate-500 dark:text-slate-400">{profileData.email}</p>
+          <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-2 text-sm text-slate-600 dark:text-slate-300">
              {profileData.location && <span>📍 {profileData.location}</span>}
              {profileData.createdAt && <span>📅 Joined {new Date(profileData.createdAt).toLocaleDateString()}</span>}
           </div>
         </div>
 
         <div className="pt-0 md:pt-12 z-10 flex gap-2">
-          <button onClick={() => setActiveTab('settings')} className="px-4 py-2 bg-white border rounded-lg shadow-sm text-sm font-medium hover:bg-slate-50 transition flex items-center gap-2 text-slate-700">
+          <button onClick={() => setActiveTab('settings')} className="px-4 py-2 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-lg shadow-sm text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2 text-slate-700 dark:text-slate-200">
             <Icons.Edit /> Edit Profile
           </button>
-          <button onClick={handleLogout} className="px-4 py-2 bg-red-50 border border-red-100 rounded-lg shadow-sm text-sm font-medium hover:bg-red-100 transition flex items-center gap-2 text-red-600">
+          <button onClick={handleLogout} className="px-4 py-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-lg shadow-sm text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-2 text-red-600 dark:text-red-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             Logout
           </button>
@@ -281,7 +281,7 @@ export default function Profile() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b mb-6 overflow-x-auto">
+      <div className="flex gap-4 border-b dark:border-slate-800 mb-6 overflow-x-auto">
         {[
           { id: 'overview', label: 'Overview', icon: <Icons.Activity /> },
           { id: 'appointments', label: 'Appointments', icon: <Icons.Calendar /> },
@@ -291,11 +291,11 @@ export default function Profile() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`pb-3 px-4 text-sm font-medium flex items-center gap-2 transition-colors relative ${
-              activeTab === tab.id ? 'text-blue-600' : 'text-slate-500 hover:text-slate-800'
+              activeTab === tab.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             {tab.icon} {tab.label}
-            {activeTab === tab.id && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />}
+            {activeTab === tab.id && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />}
           </button>
         ))}
       </div>
@@ -310,7 +310,7 @@ export default function Profile() {
           transition={{ duration: 0.2 }}
         >
           {msg && (
-            <div className={`mb-4 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+            <div className={`mb-4 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-800' : 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-100 dark:border-green-800'}`}>
               <span>{msg.type === 'error' ? '⚠️' : '✅'}</span>
               {msg.text}
             </div>
@@ -320,30 +320,33 @@ export default function Profile() {
             <div className="grid gap-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-6 rounded-xl border shadow-sm">
-                  <div className="text-sm text-slate-500 mb-1">Total Sessions</div>
-                  <div className="text-3xl font-bold text-slate-900">{stats.totalApts}</div>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border dark:border-slate-700 shadow-sm transition-colors">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Total Sessions</div>
+                  <div className="text-3xl font-bold text-slate-900 dark:text-white">{stats.totalApts}</div>
                 </div>
-                <div className="bg-white p-6 rounded-xl border shadow-sm">
-                  <div className="text-sm text-slate-500 mb-1">Upcoming</div>
-                  <div className="text-3xl font-bold text-blue-600">{stats.upcomingApts}</div>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border dark:border-slate-700 shadow-sm transition-colors">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Upcoming</div>
+                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.upcomingApts}</div>
                 </div>
-                <div className="bg-white p-6 rounded-xl border shadow-sm">
-                  <div className="text-sm text-slate-500 mb-1">Avg Mood Score</div>
-                  <div className="text-3xl font-bold text-emerald-600">{stats.avgMood}<span className="text-sm text-slate-400 font-normal">/5</span></div>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border dark:border-slate-700 shadow-sm transition-colors">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Avg Mood Score</div>
+                  <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.avgMood}<span className="text-sm text-slate-400 dark:text-slate-500 font-normal">/5</span></div>
                 </div>
               </div>
 
               {/* Chart */}
-              <div className="bg-white p-6 rounded-xl border shadow-sm">
-                <h3 className="text-lg font-semibold mb-6">Mood Trend</h3>
+              <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border dark:border-slate-700 shadow-sm transition-colors">
+                <h3 className="text-lg font-semibold mb-6 text-slate-900 dark:text-white">Mood Trend</h3>
                 <div className="h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={moods.slice(-14)}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                      <XAxis dataKey="date" tick={{fontSize: 12}} tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, {month:'short', day:'numeric'})} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.2} />
+                      <XAxis dataKey="date" tick={{fontSize: 12, fill: '#94a3b8'}} tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, {month:'short', day:'numeric'})} />
                       <YAxis domain={[0, 5]} hide />
-                      <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                      <RechartsTooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#1e293b', color: '#f8fafc' }} 
+                        itemStyle={{ color: '#f8fafc' }}
+                      />
                       <Line type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={3} dot={{r:4, fill: '#4F46E5'}} activeDot={{r:6}} />
                     </LineChart>
                   </ResponsiveContainer>
@@ -355,39 +358,39 @@ export default function Profile() {
           {activeTab === 'appointments' && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Appointment History</h3>
-                <button className="text-sm text-blue-600 hover:underline">Export History</button>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Appointment History</h3>
+                <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline">Export History</button>
               </div>
 
               {appointments.length === 0 ? (
-                <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed">
-                  <p className="text-slate-500">No appointments found.</p>
+                <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400">No appointments found.</p>
                 </div>
               ) : (
-                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 rounded-xl border dark:border-slate-700 shadow-sm overflow-hidden transition-colors">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 border-b">
+                    <thead className="bg-slate-50 dark:bg-slate-900/50 border-b dark:border-slate-700">
                       <tr>
-                        <th className="p-4 font-medium text-slate-600">Date</th>
-                        <th className="p-4 font-medium text-slate-600">Type</th>
-                        <th className="p-4 font-medium text-slate-600">Status</th>
-                        <th className="p-4 font-medium text-slate-600 text-right">Actions</th>
+                        <th className="p-4 font-medium text-slate-600 dark:text-slate-300">Date</th>
+                        <th className="p-4 font-medium text-slate-600 dark:text-slate-300">Type</th>
+                        <th className="p-4 font-medium text-slate-600 dark:text-slate-300">Status</th>
+                        <th className="p-4 font-medium text-slate-600 dark:text-slate-300 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y dark:divide-slate-700">
                       {appointments.map(apt => (
-                        <tr key={apt.id} className="hover:bg-slate-50 transition">
-                          <td className="p-4">{new Date(apt.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                          <td className="p-4">{apt.type}</td>
+                        <tr key={apt.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                          <td className="p-4 text-slate-900 dark:text-slate-200">{new Date(apt.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                          <td className="p-4 text-slate-900 dark:text-slate-200">{apt.type}</td>
                           <td className="p-4">
                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                              apt.status === 'responded' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                              apt.status === 'responded' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
                             }`}>
                               {apt.status}
                             </span>
                           </td>
                           <td className="p-4 text-right">
-                            <button onClick={() => cancelAppointment(apt.id)} className="text-slate-400 hover:text-red-600 transition" title="Cancel">
+                            <button onClick={() => cancelAppointment(apt.id)} className="text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition" title="Cancel">
                               <Icons.Trash />
                             </button>
                           </td>
@@ -402,51 +405,51 @@ export default function Profile() {
 
           {activeTab === 'settings' && (
             <div className="max-w-xl">
-              <form onSubmit={handleProfileUpdate} className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                <h3 className="text-lg font-semibold mb-4">Edit Profile Info</h3>
+              <form onSubmit={handleProfileUpdate} className="bg-white dark:bg-slate-800 p-6 rounded-xl border dark:border-slate-700 shadow-sm space-y-4 transition-colors">
+                <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Edit Profile Info</h3>
                 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700">Display Name</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Display Name</label>
                     <input 
                       value={editForm.displayName || ''} 
                       onChange={e => setEditForm(p => ({...p, displayName: e.target.value}))}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                      className="w-full px-3 py-2 border dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 dark:text-white" 
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700">Phone</label>
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone</label>
                     <input 
                       value={editForm.phone || ''} 
                       onChange={e => setEditForm(p => ({...p, phone: e.target.value}))}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                      className="w-full px-3 py-2 border dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 dark:text-white" 
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Location</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Location</label>
                   <input 
                     value={editForm.location || ''} 
                     onChange={e => setEditForm(p => ({...p, location: e.target.value}))}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className="w-full px-3 py-2 border dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 dark:text-white" 
                     placeholder="e.g. Lagos, Nigeria"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Bio</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Bio</label>
                   <textarea 
                     value={editForm.bio || ''} 
                     onChange={e => setEditForm(p => ({...p, bio: e.target.value}))}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-24 resize-none" 
+                    className="w-full px-3 py-2 border dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-24 resize-none bg-white dark:bg-slate-900 dark:text-white" 
                     placeholder="Tell us a bit about yourself..."
                   />
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3">
-                  <button type="button" onClick={() => { setActiveTab('overview'); setEditForm(profileData) }} className="px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-lg">Cancel</button>
-                  <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                  <button type="button" onClick={() => { setActiveTab('overview'); setEditForm(profileData) }} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors">Cancel</button>
+                  <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 transition-colors">
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>

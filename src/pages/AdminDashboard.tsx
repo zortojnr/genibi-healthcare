@@ -176,38 +176,38 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
-        <header className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm">
-          <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
-          <button onClick={handleLogout} className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100">Logout</button>
+        <header className="flex justify-between items-center mb-8 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm transition-colors duration-300">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Admin Dashboard</h1>
+          <button onClick={handleLogout} className="px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">Logout</button>
         </header>
 
         <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
-          {['users', 'appointments', 'library', 'referrals'].map(t => (
+          {['users', 'appointments', 'library', 'referrals', 'medications'].map(t => (
             <button key={t} onClick={() => setTab(t as any)} 
-              className={`px-4 py-2 rounded-lg capitalize ${tab === t ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100'}`}>
+              className={`px-4 py-2 rounded-lg capitalize transition-colors ${tab === t ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
               {t}
             </button>
           ))}
         </div>
 
-        <main className="bg-white rounded-2xl shadow-sm p-6 min-h-[500px]">
+        <main className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 min-h-[500px] transition-colors duration-300">
           {tab === 'users' && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Registered Users</h2>
+              <h2 className="text-xl font-semibold mb-4 dark:text-white">Registered Users</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
-                  <thead className="bg-slate-50">
+                  <thead className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                     <tr>
                       <th className="p-3 rounded-l-lg">Email</th>
                       <th className="p-3">Name</th>
                       <th className="p-3 rounded-r-lg">Last Login</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="dark:text-slate-300">
                     {users.map(u => (
-                      <tr key={u.id} className="border-b last:border-0">
+                      <tr key={u.id} className="border-b dark:border-slate-700 last:border-0">
                         <td className="p-3">{u.email}</td>
                         <td className="p-3">{u.displayName || '-'}</td>
                         <td className="p-3">{u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-'}</td>
@@ -221,33 +221,33 @@ export default function AdminDashboard() {
 
           {tab === 'appointments' && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Bookings</h2>
+              <h2 className="text-xl font-semibold mb-4 dark:text-white">Bookings</h2>
               <div className="grid gap-4">
                 {appointments.map(a => (
-                  <div key={a.id} className="border rounded-xl p-4 bg-slate-50">
+                  <div key={a.id} className="border dark:border-slate-700 rounded-xl p-4 bg-slate-50 dark:bg-slate-700/30 transition-colors">
                     <div className="flex justify-between mb-2">
-                      <span className="font-semibold text-blue-700">{a.type}</span>
-                      <span className="text-sm text-slate-500">{a.date}</span>
+                      <span className="font-semibold text-blue-700 dark:text-blue-400">{a.type}</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">{a.date}</span>
                     </div>
-                    <div className="text-sm mb-2">Ref: {a.CFID_reference}</div>
-                    <div className="text-sm mb-2">Status: <span className={`font-medium ${a.status==='responded'?'text-green-600':'text-amber-600'}`}>{a.status}</span></div>
+                    <div className="text-sm mb-2 dark:text-slate-300">Ref: {a.CFID_reference}</div>
+                    <div className="text-sm mb-2 dark:text-slate-300">Status: <span className={`font-medium ${a.status==='responded'?'text-green-600 dark:text-green-400':'text-amber-600 dark:text-amber-400'}`}>{a.status}</span></div>
                     
                     {a.status !== 'responded' ? (
                       <div className="mt-3">
                         <textarea 
                           placeholder="Write a response/solution..." 
-                          className="w-full p-2 rounded border mb-2 text-sm"
+                          className="w-full p-2 rounded border dark:border-slate-600 mb-2 text-sm bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400"
                           value={responseTexts[a.id] || ''}
                           onChange={e => setResponseTexts(prev => ({...prev, [a.id]: e.target.value}))}
                         />
-                        <button onClick={() => sendResponse(a.id)} disabled={loading} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">
+                        <button onClick={() => sendResponse(a.id)} disabled={loading} className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">
                           Send Response
                         </button>
                       </div>
                     ) : (
-                      <div className="mt-3 p-3 bg-green-50 rounded border border-green-100 text-sm">
-                        <div className="font-medium text-green-800">Admin Response:</div>
-                        <div className="text-green-700">{a.response}</div>
+                      <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-100 dark:border-green-800 text-sm">
+                        <div className="font-medium text-green-800 dark:text-green-300">Admin Response:</div>
+                        <div className="text-green-700 dark:text-green-400">{a.response}</div>
                       </div>
                     )}
                   </div>
@@ -259,37 +259,37 @@ export default function AdminDashboard() {
           {tab === 'library' && (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Library Management</h2>
-                <button onClick={seedLibrary} disabled={loading} className="text-xs bg-slate-100 px-2 py-1 rounded hover:bg-slate-200">
+                <h2 className="text-xl font-semibold dark:text-white">Library Management</h2>
+                <button onClick={seedLibrary} disabled={loading} className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                   Seed Default Content
                 </button>
               </div>
               
-              <div className="bg-slate-50 p-4 rounded-xl mb-6">
-                <h3 className="font-medium mb-3">Upload New Material</h3>
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl mb-6 border dark:border-slate-700">
+                <h3 className="font-medium mb-3 dark:text-slate-200">Upload New Material</h3>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <input placeholder="Title" value={libTitle} onChange={e=>setLibTitle(e.target.value)} className="p-2 rounded border" />
-                  <select value={libType} onChange={e=>setLibType(e.target.value)} className="p-2 rounded border">
+                  <input placeholder="Title" value={libTitle} onChange={e=>setLibTitle(e.target.value)} className="p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400" />
+                  <select value={libType} onChange={e=>setLibType(e.target.value)} className="p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white">
                     <option value="article">Article</option>
                     <option value="video">Video</option>
                     <option value="audio">Audio</option>
                   </select>
-                  <input placeholder="Link (URL)" value={libLink} onChange={e=>setLibLink(e.target.value)} className="p-2 rounded border" />
-                  <input placeholder="Tags (comma separated)" value={libTags} onChange={e=>setLibTags(e.target.value)} className="p-2 rounded border" />
+                  <input placeholder="Link (URL)" value={libLink} onChange={e=>setLibLink(e.target.value)} className="p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400" />
+                  <input placeholder="Tags (comma separated)" value={libTags} onChange={e=>setLibTags(e.target.value)} className="p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400" />
                 </div>
-                <button onClick={uploadResource} disabled={loading} className="mt-3 px-4 py-2 bg-emerald-600 text-white rounded-lg">
+                <button onClick={uploadResource} disabled={loading} className="mt-3 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
                   {loading ? 'Uploading...' : 'Upload'}
                 </button>
               </div>
 
               <div className="grid gap-3">
                 {resources.map(r => (
-                  <div key={r.id} className="flex justify-between items-center p-3 border rounded-lg hover:bg-slate-50">
+                  <div key={r.id} className="flex justify-between items-center p-3 border dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                     <div>
-                      <div className="font-medium">{r.title}</div>
-                      <div className="text-xs text-slate-500 uppercase">{r.type}</div>
+                      <div className="font-medium dark:text-white">{r.title}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 uppercase">{r.type}</div>
                     </div>
-                    <a href={r.link} target="_blank" className="text-blue-600 text-sm hover:underline">View</a>
+                    <a href={r.link} target="_blank" className="text-blue-600 dark:text-blue-400 text-sm hover:underline">View</a>
                   </div>
                 ))}
               </div>
@@ -298,17 +298,17 @@ export default function AdminDashboard() {
 
           {tab === 'medications' && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Medication Management</h2>
+              <h2 className="text-xl font-semibold mb-4 dark:text-white">Medication Management</h2>
               
-              <div className="bg-slate-50 p-6 rounded-xl border">
-                <h3 className="font-medium mb-4">Assign Medication</h3>
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-xl border dark:border-slate-700">
+                <h3 className="font-medium mb-4 dark:text-slate-200">Assign Medication</h3>
                 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Select User</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select User</label>
                   <select 
                     value={selectedUserForMed} 
                     onChange={e => setSelectedUserForMed(e.target.value)}
-                    className="w-full p-2 rounded border bg-white"
+                    className="w-full p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white"
                   >
                     <option value="">-- Choose a user --</option>
                     {users.map(u => (
@@ -321,38 +321,38 @@ export default function AdminDashboard() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Medication Name</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Medication Name</label>
                     <input 
                       value={medForm.name}
                       onChange={e => setMedForm(p => ({...p, name: e.target.value}))}
-                      className="w-full p-2 rounded border"
+                      className="w-full p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400"
                       placeholder="e.g. Lisinopril"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Dosage</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Dosage</label>
                     <input 
                       value={medForm.dosage}
                       onChange={e => setMedForm(p => ({...p, dosage: e.target.value}))}
-                      className="w-full p-2 rounded border"
+                      className="w-full p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400"
                       placeholder="e.g. 10mg"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Frequency</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Frequency</label>
                     <input 
                       value={medForm.frequency}
                       onChange={e => setMedForm(p => ({...p, frequency: e.target.value}))}
-                      className="w-full p-2 rounded border"
+                      className="w-full p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400"
                       placeholder="e.g. Twice daily"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Special Instructions</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Special Instructions</label>
                     <input 
                       value={medForm.instructions}
                       onChange={e => setMedForm(p => ({...p, instructions: e.target.value}))}
-                      className="w-full p-2 rounded border"
+                      className="w-full p-2 rounded border dark:border-slate-600 bg-white dark:bg-slate-600 dark:text-white placeholder-slate-400"
                       placeholder="e.g. Take with food"
                     />
                   </div>
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
                   <button 
                     onClick={assignMedication}
                     disabled={loading || !selectedUserForMed}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                   >
                     {loading ? 'Assigning...' : 'Assign Medication'}
                   </button>
@@ -373,16 +373,16 @@ export default function AdminDashboard() {
 
           {tab === 'referrals' && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Referrals & Contacts</h2>
+              <h2 className="text-xl font-semibold mb-4 dark:text-white">Referrals & Contacts</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {referrals.map(r => (
-                   <a key={r.name} href={r.link} target="_blank" className="block rounded-xl border bg-white p-4 hover:shadow-md transition">
-                    <div className="text-xs text-slate-500 uppercase">{r.type}</div>
-                    <div className="mt-1 font-medium text-slate-800">{r.name}</div>
+                   <a key={r.name} href={r.link} target="_blank" className="block rounded-xl border dark:border-slate-700 bg-white dark:bg-slate-800 p-4 hover:shadow-md dark:hover:shadow-slate-900 transition-all">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 uppercase">{r.type}</div>
+                    <div className="mt-1 font-medium text-slate-800 dark:text-white">{r.name}</div>
                   </a>
                 ))}
               </div>
-              {referrals.length === 0 && <p className="text-slate-500">No referrals found in database.</p>}
+              {referrals.length === 0 && <p className="text-slate-500 dark:text-slate-400">No referrals found in database.</p>}
             </div>
           )}
         </main>

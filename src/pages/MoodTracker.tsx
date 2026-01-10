@@ -124,52 +124,65 @@ export default function MoodTracker() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <div className="rounded-2xl border bg-white/70 backdrop-blur p-6">
-        <h2 className="text-xl font-semibold text-slate-800">Mood Tracker</h2>
-        <p className="text-sm text-slate-600 mb-4">How are you feeling today?</p>
+      <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/70 dark:border-slate-800 backdrop-blur p-6 transition-colors">
+        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Mood Tracker</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">How are you feeling today?</p>
 
         {msg && (
-          <div className={`mb-4 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+          <div className={`mb-4 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-800' : 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-100 dark:border-green-800'}`}>
             <span>{msg.type === 'error' ? '⚠️' : '✅'}</span>
             {msg.text}
           </div>
         )}
 
         <div className="mt-4">
-          <input type="range" min={1} max={5} value={score} onChange={e=>setScore(Number(e.target.value))} className="w-full" />
-          <div className="flex justify-between text-xs text-slate-500">
+          <input type="range" min={1} max={5} value={score} onChange={e=>setScore(Number(e.target.value))} className="w-full accent-blue-600 dark:accent-blue-500" />
+          <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>😞 1</span><span>🙂 3</span><span>😊 5</span>
           </div>
         </div>
 
         <div className="mt-4">
-          <label className="text-sm text-slate-700 block mb-2">Mood direction</label>
-          <select value={moodDirection} onChange={e=>setMoodDirection(e.target.value)} className="w-full px-3 py-2 rounded-lg border bg-white">
-            <option value="Positive">Positive</option>
-            <option value="Neutral">Neutral</option>
-            <option value="Negative">Negative</option>
+          <label className="text-sm text-slate-700 dark:text-slate-300 block mb-2">Mood direction</label>
+          <select 
+            value={moodDirection} 
+            onChange={e=>setMoodDirection(e.target.value)} 
+            className="w-full px-3 py-2 rounded-lg border bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option>Positive</option>
+            <option>Neutral</option>
+            <option>Negative</option>
           </select>
         </div>
 
         <div className="mt-4">
-          <label className="text-sm text-slate-700 block mb-2">Mood intensity</label>
-          <input type="range" min={1} max={5} value={moodIntensity} onChange={e=>setMoodIntensity(Number(e.target.value))} className="w-full" />
-          <div className="flex justify-between text-xs text-slate-500">
+          <label className="text-sm text-slate-700 dark:text-slate-300 block mb-2">Mood intensity</label>
+          <input type="range" min={1} max={5} value={moodIntensity} onChange={e=>setMoodIntensity(Number(e.target.value))} className="w-full accent-blue-600 dark:accent-blue-500" />
+          <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>1 - Very Low</span><span>3 - Moderate</span><span>5 - Very High</span>
           </div>
         </div>
 
         <div className="mt-4">
-          <label className="text-sm text-slate-700 block mb-2">Mood source</label>
-          <select value={moodSource} onChange={e=>setMoodSource(e.target.value)} className="w-full px-3 py-2 rounded-lg border bg-white">
-            <option value="My thoughts/internal feelings">My thoughts/internal feelings</option>
-            <option value="Someone else's actions or words">Someone else's actions or words</option>
-            <option value="Environment / surroundings">Environment / surroundings</option>
-            <option value="Not sure">Not sure</option>
+          <label className="text-sm text-slate-700 dark:text-slate-300 block mb-2">Mood source</label>
+          <select 
+            value={moodSource} 
+            onChange={e=>setMoodSource(e.target.value)} 
+            className="w-full px-3 py-2 rounded-lg border bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option>My thoughts/internal feelings</option>
+            <option>Someone else's actions or words</option>
+            <option>Environment / surroundings</option>
+            <option>Not sure</option>
           </select>
         </div>
 
-        <textarea value={note} onChange={e=>setNote(e.target.value)} placeholder="Add a note (optional)" className="mt-4 w-full px-3 py-2 rounded-lg border bg-white" />
+        <textarea 
+          value={note} 
+          onChange={e=>setNote(e.target.value)} 
+          placeholder="Add a note (optional)" 
+          className="mt-4 w-full px-3 py-2 rounded-lg border bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-500" 
+        />
 
         <button 
           onClick={save} 
@@ -209,8 +222,8 @@ export default function MoodTracker() {
         </button>
       </div>
 
-      <div className="rounded-2xl border bg-white/70 backdrop-blur p-6 mt-8">
-        <h3 className="font-medium text-slate-800">Recent trend</h3>
+      <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/70 dark:border-slate-800 backdrop-blur p-6 mt-8 transition-colors">
+        <h3 className="font-medium text-slate-800 dark:text-slate-100">Recent trend</h3>
         {loading ? (
           <div className="h-64 mt-4 flex items-center justify-center text-slate-400">
             <svg className="animate-spin h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -219,7 +232,7 @@ export default function MoodTracker() {
             </svg>
           </div>
         ) : moods.length === 0 ? (
-          <div className="h-64 mt-4 flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">
+          <div className="h-64 mt-4 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
             <span className="text-4xl mb-2">📊</span>
             <p>No mood data yet. Start tracking today!</p>
           </div>
@@ -227,9 +240,12 @@ export default function MoodTracker() {
           <div className="h-64 mt-4">
             <ResponsiveContainer>
               <LineChart data={data}>
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis domain={[1,5]} tick={{ fontSize: 12 }} />
-                <Tooltip />
+                <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <YAxis domain={[1,5]} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
+                  itemStyle={{ color: '#f8fafc' }}
+                />
                 <Line type="monotone" dataKey="score" stroke="#3F8CFF" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
