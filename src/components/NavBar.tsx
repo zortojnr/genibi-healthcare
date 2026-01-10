@@ -1,13 +1,48 @@
-import { NavLink } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
-import { useState } from 'react'
 
 export default function NavBar() {
-  const { user, signOut } = useAuth()
-  const [open, setOpen] = useState(false)
+  const { user } = useAuth()
+  const [isOpen, setIsOpen] = useState(false)
+  const location = useLocation()
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const linkClass = ({ isActive }: { isActive: boolean }) => `block px-3 py-2 rounded ${isActive ? 'text-blue-600' : 'text-slate-700'} hover:text-slate-900`
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsOpen(false)
+  }, [location.pathname])
+
+  // Close menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [isOpen])
+
+  const links = [
+    { to: '/', label: 'Home' },
+    { to: '/chat', label: 'AI Assistant' },
+    { to: '/appointments', label: 'Appointments' },
+    { to: '/mood', label: 'Mood Tracker' },
+    { to: '/medications', label: 'Medications' },
+    { to: '/library', label: 'Library' },
+  ]
 
   return (
     <header className="sticky top-0 z-40 backdrop-blur bg-white/60 border-b">
@@ -22,6 +57,7 @@ export default function NavBar() {
           <NavLink className={linkClass} to="/chat">AI Assistant</NavLink>
           <NavLink className={linkClass} to="/appointments">Appointments</NavLink>
           <NavLink className={linkClass} to="/mood">Mood Tracker</NavLink>
+          <NavLink className={linkClass} to="/medications">Medications</NavLink>
           <NavLink className={linkClass} to="/library">Library</NavLink>
           <NavLink className={linkClass} to="/profile">Profile</NavLink>
         </nav>
@@ -31,27 +67,42 @@ export default function NavBar() {
           {/* Mobile menu button */}
           <button
             aria-label="Toggle menu"
-            aria-expanded={open}
-            onClick={() => setOpen(v => !v)}
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen(v => !v)}
             className="md:hidden inline-flex items-center justify-center rounded-md border px-3 py-2 bg-white text-slate-700 hover:bg-slate-100"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
           </button>
-          <button onClick={signOut} className="text-xs px-3 py-2 rounded bg-slate-900 text-white">Sign out</button>
         </div>
       </div>
 
-      {/* Mobile nav panel */}
-      {open && (
-        <div className="md:hidden border-t bg-white/80">
-          <div className="mx-auto max-w-6xl px-4 py-3 grid gap-2 text-sm">
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/">Home</NavLink>
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/chat">AI Assistant</NavLink>
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/appointments">Appointments</NavLink>
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/mood">Mood Tracker</NavLink>
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/library">Library</NavLink>
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/referrals">Referrals</NavLink>
-            <NavLink onClick={() => setOpen(false)} className={linkClass as any} to="/profile">Profile</NavLink>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div ref={menuRef} className="md:hidden border-t bg-white/95 backdrop-blur-sm absolute w-full left-0 z-50 shadow-lg animate-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col p-4 space-y-3">
+            {links.map(link => (
+              <Link 
+                key={link.to} 
+                to={link.to} 
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === link.to 
+                    ? 'bg-blue-50 text-blue-700' 
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link 
+              to="/profile"
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                location.pathname === '/profile'
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              Profile
+            </Link>
           </div>
         </div>
       )}

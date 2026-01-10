@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore'
+import type { FormEvent } from 'react'
+import { collection, query, where, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../contexts/AuthContext'
 import { format, parse } from 'date-fns'
@@ -24,6 +25,32 @@ export default function Medications() {
   // Time Picker State
   const [editingId, setEditingId] = useState<string | null>(null)
   const [selectedTimes, setSelectedTimes] = useState<string[]>(['09:00'])
+
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [adding, setAdding] = useState(false)
+  const [newMed, setNewMed] = useState({ name: '', dosage: '', frequency: '', instructions: '' })
+
+  const handleAddMedication = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+    setAdding(true)
+    try {
+      await addDoc(collection(db, 'medications'), {
+        ...newMed,
+        userId: user.uid,
+        assignedAt: new Date().toISOString(),
+        assignedBy: 'user',
+        times: ['09:00']
+      })
+      setNewMed({ name: '', dosage: '', frequency: '', instructions: '' })
+      setShowAddForm(false)
+      setMsg({ type: 'success', text: 'Medication added successfully!' })
+    } catch (e) {
+      console.error(e)
+      setMsg({ type: 'error', text: 'Failed to add medication.' })
+    }
+    setAdding(false)
+  }
 
   // Helper to generate ICS content
   const generateICS = (med: Medication) => {
@@ -119,7 +146,67 @@ END:VCALENDAR`
             <h2 className="text-2xl font-bold text-slate-800">Medication Tracker</h2>
             <p className="text-slate-600">Manage your prescriptions and daily intake.</p>
           </div>
+          <button 
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2"
+          >
+            {showAddForm ? 'Cancel' : '+ Add New'}
+          </button>
         </div>
+
+        {showAddForm && (
+          <form onSubmit={handleAddMedication} className="bg-slate-50 border rounded-xl p-5 mb-6 animate-in slide-in-from-top-4 duration-300">
+            <h3 className="font-semibold text-slate-800 mb-4">Add New Medication</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <input 
+                  required
+                  value={newMed.name}
+                  onChange={e => setNewMed({...newMed, name: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. Lisinopril"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Dosage</label>
+                <input 
+                  value={newMed.dosage}
+                  onChange={e => setNewMed({...newMed, dosage: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. 10mg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Frequency</label>
+                <input 
+                  value={newMed.frequency}
+                  onChange={e => setNewMed({...newMed, frequency: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. Twice daily"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Instructions</label>
+                <input 
+                  value={newMed.instructions}
+                  onChange={e => setNewMed({...newMed, instructions: e.target.value})}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. Take with food"
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button 
+                type="submit" 
+                disabled={adding}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+              >
+                {adding ? 'Adding...' : 'Add Medication'}
+              </button>
+            </div>
+          </form>
+        )}
 
         {msg && (
           <div className={`mb-6 p-3 rounded-lg text-sm flex items-center gap-2 ${msg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
