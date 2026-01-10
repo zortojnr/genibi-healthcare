@@ -110,9 +110,9 @@ export default function MoodTracker() {
       // setMoods(prev => [...prev, entry]) // No longer needed with onSnapshot
       setNote('')
       setMsg({ type: 'success', text: 'Mood entry saved successfully!' })
-    } catch (e) {
-      console.error('Save mood failed', e)
-      setMsg({ type: 'error', text: 'Failed to save mood. Please try again.' })
+    } catch (e: any) {
+      console.error('Save mood failed:', e.code, e.message)
+      setMsg({ type: 'error', text: `Failed to save mood: ${e.message || 'Unknown error'}. Please try again.` })
     } finally {
       setSaving(false)
     }

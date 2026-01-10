@@ -5,13 +5,17 @@ import { useNavigate } from 'react-router-dom'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
-  const [tab, setTab] = useState<'users' | 'appointments' | 'library' | 'referrals'>('users')
+  const [tab, setTab] = useState<'users' | 'appointments' | 'library' | 'referrals' | 'medications'>('users')
   
   // Data States
   const [users, setUsers] = useState<any[]>([])
   const [appointments, setAppointments] = useState<any[]>([])
   const [resources, setResources] = useState<any[]>([])
   const [referrals, setReferrals] = useState<any[]>([])
+  
+  // Medication State
+  const [selectedUserForMed, setSelectedUserForMed] = useState<string>('')
+  const [medForm, setMedForm] = useState({ name: '', dosage: '', frequency: '', instructions: '' })
   
   // Form States
   const [loading, setLoading] = useState(false)
@@ -64,6 +68,29 @@ export default function AdminDashboard() {
   async function handleLogout() {
     await signOutUser()
     navigate('/login')
+  }
+
+  async function assignMedication() {
+    if (!selectedUserForMed || !medForm.name) return alert('User and Medication Name required')
+    setLoading(true)
+    try {
+      await addDoc(collection(db, 'medications'), {
+        userId: selectedUserForMed,
+        name: medForm.name,
+        dosage: medForm.dosage,
+        frequency: medForm.frequency,
+        instructions: medForm.instructions,
+        assignedBy: 'admin',
+        assignedAt: new Date().toISOString()
+      })
+      alert('Medication assigned successfully')
+      setMedForm({ name: '', dosage: '', frequency: '', instructions: '' })
+    } catch (e) {
+      console.error(e)
+      alert('Failed to assign medication')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function sendResponse(aptId: string) {
@@ -265,6 +292,81 @@ export default function AdminDashboard() {
                     <a href={r.link} target="_blank" className="text-blue-600 text-sm hover:underline">View</a>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {tab === 'medications' && (
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Medication Management</h2>
+              
+              <div className="bg-slate-50 p-6 rounded-xl border">
+                <h3 className="font-medium mb-4">Assign Medication</h3>
+                
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Select User</label>
+                  <select 
+                    value={selectedUserForMed} 
+                    onChange={e => setSelectedUserForMed(e.target.value)}
+                    className="w-full p-2 rounded border bg-white"
+                  >
+                    <option value="">-- Choose a user --</option>
+                    {users.map(u => (
+                      <option key={u.id} value={u.id}>
+                        {u.displayName || 'No Name'} ({u.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Medication Name</label>
+                    <input 
+                      value={medForm.name}
+                      onChange={e => setMedForm(p => ({...p, name: e.target.value}))}
+                      className="w-full p-2 rounded border"
+                      placeholder="e.g. Lisinopril"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Dosage</label>
+                    <input 
+                      value={medForm.dosage}
+                      onChange={e => setMedForm(p => ({...p, dosage: e.target.value}))}
+                      className="w-full p-2 rounded border"
+                      placeholder="e.g. 10mg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Frequency</label>
+                    <input 
+                      value={medForm.frequency}
+                      onChange={e => setMedForm(p => ({...p, frequency: e.target.value}))}
+                      className="w-full p-2 rounded border"
+                      placeholder="e.g. Twice daily"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Special Instructions</label>
+                    <input 
+                      value={medForm.instructions}
+                      onChange={e => setMedForm(p => ({...p, instructions: e.target.value}))}
+                      className="w-full p-2 rounded border"
+                      placeholder="e.g. Take with food"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <button 
+                    onClick={assignMedication}
+                    disabled={loading || !selectedUserForMed}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Assigning...' : 'Assign Medication'}
+                  </button>
+                </div>
               </div>
             </div>
           )}

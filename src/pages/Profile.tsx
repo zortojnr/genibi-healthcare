@@ -53,7 +53,7 @@ const Icons = {
 }
 
 export default function Profile() {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState<'overview' | 'appointments' | 'settings'>('overview')
   const [loading, setLoading] = useState(true)
   const [profileData, setProfileData] = useState<UserProfileData>({})
@@ -68,12 +68,30 @@ export default function Profile() {
 
   // Fetch Data
   useEffect(() => {
-    if (!user) return
+    let isMounted = true
     const fetchData = async () => {
+      if (!user) {
+        setLoading(false)
+        return
+      }
+      
       try {
-        // 1. User Profile
-        const userDocRef = doc(db, 'users', user.uid)
-        const userSnap = await getDoc(userDocRef)
+        // Timeout Promise
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000))
+        
+        // Data Promises
+        const profilePromise = getDoc(doc(db, 'users', user.uid))
+        const aptPromise = getDocs(query(collection(db, 'appointments'), where('userId', '==', user.uid), orderBy('date', 'desc')))
+        const moodPromise = getDocs(query(collection(db, 'moods'), where('userId', '==', user.uid), orderBy('date', 'asc')))
+
+        // Race against timeout
+        const [userSnap, aptSnap, moodSnap] = await Promise.race([
+          Promise.all([profilePromise, aptPromise, moodPromise]),
+          timeout
+        ]) as [any, any, any]
+        
+        if (!isMounted) return
+
         const userData = userSnap.exists() ? userSnap.data() : {}
         
         const mergedProfile = {
@@ -88,24 +106,33 @@ export default function Profile() {
         setProfileData(mergedProfile)
         setEditForm(mergedProfile)
 
-        // 2. Appointments
-        const aptQuery = query(collection(db, 'appointments'), where('userId', '==', user.uid), orderBy('date', 'desc'))
-        const aptSnap = await getDocs(aptQuery)
-        setAppointments(aptSnap.docs.map(d => ({ id: d.id, ...d.data() } as Appointment)))
+        setAppointments(aptSnap.docs.map((d: any) => ({ id: d.id, ...d.data() } as Appointment)))
+        setMoods(moodSnap.docs.map((d: any) => ({ id: d.id, ...d.data() } as MoodEntry)))
 
-        // 3. Moods
-        const moodQuery = query(collection(db, 'moods'), where('userId', '==', user.uid), orderBy('date', 'asc'))
-        const moodSnap = await getDocs(moodQuery)
-        setMoods(moodSnap.docs.map(d => ({ id: d.id, ...d.data() } as MoodEntry)))
-
-      } catch (e) {
+      } catch (e: any) {
+        if (!isMounted) return
         console.error("Error loading profile data:", e)
+        setMsg({ type: 'error', text: e.message === 'Request timed out' ? 'Loading timed out. Please refresh.' : 'Failed to load profile data.' })
       } finally {
-        setLoading(false)
+        if (isMounted) setLoading(false)
       }
     }
+    
     fetchData()
+    return () => { isMounted = false }
   }, [user])
+
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to log out?')) {
+      try {
+        await signOut()
+        // AuthContext handles redirect usually, but we can force it or let the state change handle it
+      } catch (e) {
+        console.error('Logout failed', e)
+        setMsg({ type: 'error', text: 'Failed to logout. Try again.' })
+      }
+    }
+  }
 
   // --- Actions ---
 
@@ -242,9 +269,13 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="pt-0 md:pt-12 z-10">
-          <button onClick={() => setActiveTab('settings')} className="px-4 py-2 bg-white border rounded-lg shadow-sm text-sm font-medium hover:bg-slate-50 transition flex items-center gap-2">
+        <div className="pt-0 md:pt-12 z-10 flex gap-2">
+          <button onClick={() => setActiveTab('settings')} className="px-4 py-2 bg-white border rounded-lg shadow-sm text-sm font-medium hover:bg-slate-50 transition flex items-center gap-2 text-slate-700">
             <Icons.Edit /> Edit Profile
+          </button>
+          <button onClick={handleLogout} className="px-4 py-2 bg-red-50 border border-red-100 rounded-lg shadow-sm text-sm font-medium hover:bg-red-100 transition flex items-center gap-2 text-red-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Logout
           </button>
         </div>
       </div>

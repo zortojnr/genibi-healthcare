@@ -1,6 +1,7 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
 const quotes = [
   'Breathe. You are doing the best you can.',
@@ -20,12 +21,19 @@ const features = [
 export default function Dashboard() {
   const { user } = useAuth()
   const name = user?.displayName || 'Friend'
-  const quote = quotes[Math.floor(Math.random() * quotes.length)]
+  const [quoteIndex, setQuoteIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setQuoteIndex((prev) => (prev + 1) % quotes.length)
+    }, 5000) // 5 seconds for better readability
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="rounded-2xl border bg-white/70 backdrop-blur p-6">
-        <div className="flex items-center justify-between gap-3">
+      <div className="rounded-2xl border bg-white/70 backdrop-blur p-6 relative overflow-hidden">
+        <div className="flex items-center justify-between gap-3 relative z-10">
           <h1 className="text-2xl font-semibold text-slate-900">Welcome, {name}</h1>
           <a href="tel:+2348060270792" aria-label="Call Support +234 806 027 0792"
              className="inline-flex items-center gap-2 border bg-blue-100 text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-300 transition-colors">
@@ -33,7 +41,21 @@ export default function Dashboard() {
             <span className="font-medium">Support: +234 806 027 0792</span>
           </a>
         </div>
-        <p className="text-slate-600 mt-2">{quote}</p>
+        
+        <div className="mt-4 h-8 relative z-10">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={quoteIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="text-slate-600 italic absolute w-full"
+            >
+              "{quotes[quoteIndex]}"
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
