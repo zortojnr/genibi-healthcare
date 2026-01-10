@@ -108,9 +108,27 @@ export default function AdminDashboard() {
 
   async function seedLibrary() {
     const seeds = [
-      { title: 'Ways to Manage Stress', type: 'article', link: '#', tags: ['stress', 'health'] },
-      { title: 'Generalized Anxiety Disorder', type: 'article', link: '#', tags: ['anxiety'] },
-      { title: 'Post-Traumatic Stress Disorder (PTSD)', type: 'article', link: '#', tags: ['ptsd'] },
+      {
+        title: "Myths vs. Facts: Mental Health",
+        type: 'article',
+        link: "https://www.medicalnewstoday.com/articles/154543#myths-vs-facts",
+        tags: ['myths', 'education'],
+        content: "Mental health myths can be harmful and increase stigma. It is crucial to distinguish between fact and fiction to support those affected. Common myths include the idea that mental health problems are rare or that people can just 'snap out of it'. The truth is that mental health issues are common and often require professional treatment..."
+      },
+      { 
+        title: 'Ways to Manage Stress', 
+        type: 'article', 
+        link: 'https://ibn.idsi.md/sites/default/files/imag_file/277-286_5.pdf', 
+        tags: ['stress', 'health'],
+        content: "Stress management offers a range of strategies to help you better deal with stress and difficulty (adversity) in your life. Managing stress can help you lead a more balanced, healthier life. Stress is an automatic physical, mental and emotional response to a challenging event..."
+      },
+      { 
+        title: 'Generalized Anxiety Disorder', 
+        type: 'article', 
+        link: 'https://www.nejm.org/doi/full/10.1056/NEJMcp1502514', 
+        tags: ['anxiety'],
+        content: "Generalized anxiety disorder is characterized by excessive anxiety and worry about a variety of events or activities (e.g., work or school performance) that occurs more days than not for at least 6 months. The anxiety and worry are associated with three (or more) of the following six symptoms..."
+      },
       { 
         title: 'A Call to Mental Health Awareness Among Students of Tertiary Institutions', 
         type: 'article', 

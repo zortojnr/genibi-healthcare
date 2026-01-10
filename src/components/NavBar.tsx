@@ -23,7 +23,6 @@ export default function NavBar() {
           <NavLink className={linkClass} to="/appointments">Appointments</NavLink>
           <NavLink className={linkClass} to="/mood">Mood Tracker</NavLink>
           <NavLink className={linkClass} to="/library">Library</NavLink>
-          <NavLink className={linkClass} to="/referrals">Referrals</NavLink>
           <NavLink className={linkClass} to="/profile">Profile</NavLink>
         </nav>
 

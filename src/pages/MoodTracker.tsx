@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, orderBy, query, where, getDocs } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth } from '../contexts/AuthContext'
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts'
@@ -36,6 +36,8 @@ export default function MoodTracker() {
         where('userId', '==', uid),
         orderBy('date', 'desc')
       )
+      
+      // Initial load
       const snap = await getDocs(q)
       const items: MoodEntry[] = []
       snap.forEach(d => {
@@ -50,12 +52,35 @@ export default function MoodTracker() {
         })
       })
       setMoods(items.reverse())
+
+      // Realtime listener
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const updatedItems: MoodEntry[] = []
+        snapshot.forEach(d => {
+          const data = d.data() as any
+          updatedItems.push({ 
+            date: data.date, 
+            score: data.score, 
+            note: data.note,
+            mood_direction: data.mood_direction,
+            mood_intensity: data.mood_intensity,
+            mood_source: data.mood_source
+          })
+        })
+        setMoods(updatedItems.reverse())
+      })
+      
+      return unsubscribe
     } catch (e) {
       console.warn('Mood fetch failed, showing local data only', e)
     }
   }
 
-  useEffect(() => { load() }, [uid])
+  useEffect(() => { 
+    let unsub: any
+    load().then(u => unsub = u)
+    return () => { if(unsub && typeof unsub === 'function') unsub() }
+  }, [uid])
 
   async function save() {
     if (!uid) return
@@ -134,7 +159,7 @@ export default function MoodTracker() {
           onClick={save} 
           disabled={saving} 
           className={`
-            mt-4 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ease-in-out
+            mt-4 px-6 py-3 rounded-lg font-semibold text-slate-900 transition-all duration-200 ease-in-out
             min-w-[140px] min-h-[48px] flex items-center justify-center gap-2
             shadow-md hover:shadow-lg active:shadow-sm
             transform hover:scale-105 active:scale-95

@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import type { User } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: String(import.meta.env.VITE_FIREBASE_API_KEY || ''),
@@ -22,6 +23,7 @@ const enabled = Boolean(
 const app = enabled ? (getApps().length ? getApp() : initializeApp(firebaseConfig)) : undefined
 export const auth = enabled ? getAuth(app!) : undefined as any
 export const db = enabled ? getFirestore(app!) : undefined as any
+export const storage = enabled ? getStorage(app!) : undefined as any
 export const googleProvider = enabled ? new GoogleAuthProvider() : null as any
 
 export const isFirebaseEnabled = enabled
