@@ -1,233 +1,255 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
-interface Resource { 
+interface Resource {
   id?: string;
-  title: string; 
-  type: 'article'|'video'|'audio'; 
-  link: string; 
-  tags?: string[];
-  author?: string;
-  publishedDate?: string;
-  content?: string; // Full content or summary
+  title: string;
+  type: 'article' | 'video' | 'audio';
+  link: string;
+  tags: string[];
   thumbnail?: string;
+  content?: string;
+  author?: string;
+  date?: string;
 }
 
-// --- Recommended Articles Data ---
 const RECOMMENDED_ARTICLES: Resource[] = [
   {
+    id: 'rec1',
     title: "Myths vs. Facts: Mental Health",
     type: 'article',
     link: "https://www.medicalnewstoday.com/articles/154543#myths-vs-facts",
+    tags: ['education', 'stigma'],
     author: "Medical News Today",
-    publishedDate: "2024",
-    thumbnail: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=400",
-    tags: ['myths', 'education'],
-    content: "Mental health myths can be harmful and increase stigma. It is crucial to distinguish between fact and fiction to support those affected. Common myths include the idea that mental health problems are rare or that people can just 'snap out of it'. The truth is that mental health issues are common and often require professional treatment..."
+    date: "2024-01-15",
+    content: "Mental health myths can be harmful and increase stigma. It is crucial to distinguish between fact and fiction to support those affected. Common myths include the idea that mental health problems are rare or that people can just 'snap out of it'. The truth is that mental health issues are common and often require professional treatment...",
+    thumbnail: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800"
   },
-  {
-    title: "Ways to Manage Stress",
-    type: 'article',
-    link: "https://ibn.idsi.md/sites/default/files/imag_file/277-286_5.pdf",
-    author: "IDSI",
-    publishedDate: "2023",
-    thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400",
-    tags: ['stress', 'wellness'],
-    content: "Stress management offers a range of strategies to help you better deal with stress and difficulty (adversity) in your life. Managing stress can help you lead a more balanced, healthier life. Stress is an automatic physical, mental and emotional response to a challenging event..."
+  { 
+    id: 'rec2',
+    title: 'Ways to Manage Stress', 
+    type: 'article', 
+    link: 'https://ibn.idsi.md/sites/default/files/imag_file/277-286_5.pdf', 
+    tags: ['stress', 'health'],
+    author: "Health Guide",
+    date: "2023-11-20",
+    content: "Stress management offers a range of strategies to help you better deal with stress and difficulty (adversity) in your life. Managing stress can help you lead a more balanced, healthier life...",
+    thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800"
   },
-  {
-    title: "Generalized Anxiety Disorder",
-    type: 'article',
-    link: "https://www.nejm.org/doi/full/10.1056/NEJMcp1502514",
+  { 
+    id: 'rec3',
+    title: 'Generalized Anxiety Disorder', 
+    type: 'article', 
+    link: 'https://www.nejm.org/doi/full/10.1056/NEJMcp1502514', 
+    tags: ['anxiety', 'disorder'],
     author: "NEJM",
-    publishedDate: "2015",
-    thumbnail: "https://images.unsplash.com/photo-1620147512372-9e00421556bb?auto=format&fit=crop&q=80&w=400",
-    tags: ['anxiety', 'medical'],
-    content: "Generalized anxiety disorder is characterized by excessive anxiety and worry about a variety of events or activities (e.g., work or school performance) that occurs more days than not for at least 6 months. The anxiety and worry are associated with three (or more) of the following six symptoms..."
+    date: "2023-08-10",
+    content: "Generalized anxiety disorder is characterized by excessive anxiety and worry about a variety of events or activities...",
+    thumbnail: "https://images.unsplash.com/photo-1620147461831-a97b90ad2d7e?auto=format&fit=crop&q=80&w=800"
   },
-  {
-    title: "A Call to Mental Health Awareness Among Students",
-    type: 'article',
-    link: "#",
-    author: "Genibi Health",
-    publishedDate: "2024",
-    thumbnail: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=400",
-    tags: ['students', 'nigeria', 'awareness'],
-    content: `Many students battle with intense tension, anxiety, and grief behind the doors of lecture halls, school events, and romantic relationships. These issues linger through campus, but they are not known for their true effects. They are frequently passed off as nothing more than mere stress or vulnerability in a nation like Nigeria where mental health is usually stigmatized and support networks are limited. Still, the outcomes of mental health issues are rather significant since they influence social contacts, academic performance, even student survival. Sadly, mental health issues often come at a high cost. \n\n The quest for academic excellence in Nigeria's elite colleges—overwhelmed classrooms, scarce resources, and recurring strikes—disrupt academic schedules, intensifying the unrelenting pressure students face to succeed. According to a 2021 Irabor and Okeke research, 68% of Nigerian university students reported having significant academic stress; many also suffered anxiety problems characterized by unrelenting worry, insomnia, and panic attacks. \n\n Many tertiary students have been discovered to be depressed. About 20% of Nigerian university students exhibited symptoms of clinical depression, according to Adewuya et al. (2006). Drug use, sleep deprivation, stigma, and lack of counseling services worsen the situation. Almost 22% of recorded suicide cases related to untreated mental illness belong to tertiary students, according to a 2019 study by the Nigerian Suicide Research and Prevention Initiative. \n\n Nigeria's tertiary institutions are at a crossroads. Without fast measures to destigmatize mental health, expand counseling services, and provide supportive campus environments, avoidable tragedies threaten to eclipse the promise of education.`
+  { 
+    id: 'rec4',
+    title: 'Mental Health in Students', 
+    type: 'article', 
+    link: '#', 
+    tags: ['students', 'awareness'],
+    author: "Research Initiative",
+    date: "2024-02-01",
+    content: "Many students battle with intense tension, anxiety, and grief behind the doors of lecture halls...",
+    thumbnail: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800"
   }
 ]
 
 export default function Library() {
+  const [activeTab, setActiveTab] = useState<'all' | 'article' | 'video' | 'audio'>('all')
+  const [search, setSearch] = useState('')
   const [resources, setResources] = useState<Resource[]>([])
-  const [q, setQ] = useState('')
-  const [type, setType] = useState<'all'|'article'|'video'|'audio'>('all')
+  const [loading, setLoading] = useState(true)
+  const [isFilterOpen, setIsFilterOpen] = useState(false) // Mobile filter toggle
 
   useEffect(() => {
-    (async () => {
+    async function load() {
       try {
         const snap = await getDocs(collection(db, 'resources'))
-        const items: Resource[] = []
-        snap.forEach(d => items.push(d.data() as Resource))
+        const items = snap.docs.map(d => ({ id: d.id, ...d.data() } as Resource))
         setResources(items)
       } catch (e) {
-        console.error('Failed to load resources from Firestore', e)
+        console.error("Failed to load library", e)
+      } finally {
+        setLoading(false)
       }
-    })()
+    }
+    load()
   }, [])
 
-  const getPreview = (text?: string) => {
-    if (!text) return "Click 'Read Me' to view the full content of this resource."
-    const words = text.split(' ')
-    // Showing around 40 words to keep cards uniform, but enough for a preview
-    if (words.length <= 40) return text
-    return words.slice(0, 40).join(' ') + '...'
-  }
+  if (loading) return <div className="text-center py-12 text-slate-500">Loading resources...</div>
 
-  // Filter Recommended
-  const recommendedFiltered = useMemo(() => {
-    return RECOMMENDED_ARTICLES.filter(r => {
-      const matchesText = q ? (r.title.toLowerCase().includes(q.toLowerCase()) || (r.tags||[]).join(' ').toLowerCase().includes(q.toLowerCase())) : true
-      const matchesType = type==='all' ? true : r.type===type
-      return matchesText && matchesType
-    })
-  }, [q, type])
-
-  // Filter Uploaded
-  const uploadedFiltered = useMemo(() => {
-    // Deduplicate if needed
-    return resources.filter(r => {
-      const matchesText = q ? (r.title.toLowerCase().includes(q.toLowerCase()) || (r.tags||[]).join(' ').toLowerCase().includes(q.toLowerCase())) : true
-      const matchesType = type==='all' ? true : r.type===type
-      return matchesText && matchesType
-    })
-  }, [resources, q, type])
+  const allItems = [...RECOMMENDED_ARTICLES, ...resources]
+  const filtered = allItems.filter(r => {
+    const matchesType = activeTab === 'all' || r.type === activeTab
+    const matchesSearch = r.title.toLowerCase().includes(search.toLowerCase()) || 
+                          (r.tags || []).some(t => t.toLowerCase().includes(search.toLowerCase()))
+    return matchesType && matchesSearch
+  })
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
-      <div className="rounded-2xl border bg-white/70 backdrop-blur p-6 mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800">E-Library</h2>
-            <p className="text-slate-600 mt-1">Explore curated resources for your mental well-being.</p>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">E-Library</h1>
+        <p className="mt-2 text-slate-600 max-w-2xl">
+          Explore our curated collection of mental health resources, articles, and guides.
+        </p>
+      </div>
+
+      {/* Search & Filter - Mobile Responsive */}
+      <div className="flex flex-col lg:flex-row gap-6 mb-8">
+        {/* Search Bar */}
+        <div className="relative flex-grow">
+          <input 
+            type="text" 
+            placeholder="Search resources..." 
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl border-slate-200 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all"
+          />
+          <svg className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
+        {/* Mobile Filter Toggle */}
+        <div className="lg:hidden">
+          <button 
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-700 font-medium"
+          >
+            <span>Filter by Type: <span className="capitalize text-blue-600">{activeTab}</span></span>
+            <svg className={`w-5 h-5 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          {/* Accordion Content */}
+          <div className={`mt-2 overflow-hidden transition-all duration-300 ease-in-out ${isFilterOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="bg-white border border-slate-200 rounded-xl p-2 shadow-sm space-y-1">
+              {['all', 'article', 'video', 'audio'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => { setActiveTab(type as any); setIsFilterOpen(false); }}
+                  className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    activeTab === type ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {type === 'all' ? 'All Resources' : type.charAt(0).toUpperCase() + type.slice(1) + 's'}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-3 w-full md:w-auto">
-            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search..." className="flex-1 md:w-64 px-4 py-2 rounded-xl border bg-white focus:ring-2 focus:ring-blue-500 outline-none" />
-            <select value={type} onChange={e=>setType(e.target.value as any)} className="px-4 py-2 rounded-xl border bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-              <option value="all">All Types</option>
-              <option value="article">Articles</option>
-              <option value="video">Videos</option>
-              <option value="audio">Audio</option>
-            </select>
-          </div>
+        </div>
+
+        {/* Desktop Filters */}
+        <div className="hidden lg:flex gap-2 bg-slate-100 p-1.5 rounded-xl self-start">
+          {['all', 'article', 'video', 'audio'].map((type) => (
+            <button
+              key={type}
+              onClick={() => setActiveTab(type as any)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeTab === type 
+                  ? 'bg-white text-blue-700 shadow-sm' 
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+              }`}
+            >
+              {type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1) + 's'}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Recommended Section */}
-      {recommendedFiltered.length > 0 && (
-        <div className="mb-12">
-          <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <span className="text-2xl">🌟</span> Recommended Reading
-          </h3>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {recommendedFiltered.map((r) => (
-              <div 
-                key={r.title} 
-                className="bg-white rounded-2xl border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full group"
-              >
-                <div className="h-40 bg-slate-100 relative overflow-hidden">
-                  {r.thumbnail ? (
-                    <img src={r.thumbnail} alt={r.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl bg-gradient-to-br from-blue-50 to-indigo-50">📚</div>
-                  )}
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-xs font-semibold uppercase tracking-wider text-slate-700">
-                    {r.type}
-                  </div>
+      {/* Resource Grid - Fluid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filtered.map((item) => (
+          <div key={item.id} className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden h-full">
+            {/* Image Container with Aspect Ratio */}
+            <div className="relative w-full aspect-[16/9] bg-slate-100 overflow-hidden">
+              {item.thumbnail ? (
+                <img 
+                  src={item.thumbnail} 
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-4xl text-slate-300">
+                  {item.type === 'video' ? '🎬' : item.type === 'audio' ? '🎧' : '📄'}
                 </div>
-
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="mb-2 flex items-center gap-2 text-xs text-slate-500">
-                    <span>{r.author}</span>
-                    <span>•</span>
-                    <span>{r.publishedDate}</span>
-                  </div>
-                  
-                  <h3 className="font-bold text-lg text-slate-900 leading-tight mb-2 line-clamp-2">{r.title}</h3>
-                  
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-4 flex-1">
-                    {getPreview(r.content)}
-                  </p>
-
-                  <a 
-                    href={r.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl transition-colors font-medium shadow-sm"
-                  >
-                    <span>Read Me</span>
-                  </a>
-                </div>
+              )}
+              <div className="absolute top-3 left-3">
+                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-md border shadow-sm ${
+                  item.type === 'video' ? 'bg-red-100/90 text-red-700 border-red-200' :
+                  item.type === 'audio' ? 'bg-purple-100/90 text-purple-700 border-purple-200' :
+                  'bg-blue-100/90 text-blue-700 border-blue-200'
+                }`}>
+                  {item.type.toUpperCase()}
+                </span>
               </div>
-            ))}
+            </div>
+
+            {/* Content */}
+            <div className="p-5 flex flex-col flex-grow">
+              <h3 className="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                {item.title}
+              </h3>
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                {(item.tags || []).slice(0, 3).map(tag => (
+                  <span key={tag} className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              {item.content && (
+                <p className="text-sm text-slate-500 mb-4 line-clamp-3 flex-grow">
+                  {item.content}
+                </p>
+              )}
+
+              <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="text-xs text-slate-400">
+                  {item.date ? new Date(item.date).toLocaleDateString() : 'Recently added'}
+                </div>
+                <a 
+                  href={item.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 group/link"
+                >
+                  Read Now
+                  <svg className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            </div>
           </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">No resources found</h3>
+          <p className="text-slate-500">Try adjusting your search or filters</p>
+          <button 
+            onClick={() => { setSearch(''); setActiveTab('all'); }}
+            className="mt-6 px-6 py-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+          >
+            Clear Filters
+          </button>
         </div>
       )}
-
-      {/* Community/Uploaded Section */}
-      <div>
-         <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <span className="text-2xl">📚</span> Library Collection
-          </h3>
-         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-           {uploadedFiltered.length === 0 ? (
-             <div className="col-span-full text-center py-12 text-slate-500 bg-slate-50 rounded-xl border border-dashed">
-               No additional resources found.
-             </div>
-           ) : (
-             uploadedFiltered.map((r, i) => (
-               <div 
-                 key={r.id || i} 
-                 className="bg-white rounded-2xl border overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full group"
-               >
-                 {/* Thumbnail */}
-                 <div className="h-40 bg-slate-100 relative overflow-hidden">
-                   {r.thumbnail ? (
-                     <img src={r.thumbnail} alt={r.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                   ) : (
-                     <div className="w-full h-full flex items-center justify-center text-4xl bg-gradient-to-br from-emerald-50 to-teal-50">📑</div>
-                   )}
-                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-xs font-semibold uppercase tracking-wider text-slate-700">
-                     {r.type}
-                   </div>
-                 </div>
-
-                 {/* Content */}
-                 <div className="p-5 flex flex-col flex-1">
-                   <h3 className="font-bold text-lg text-slate-900 leading-tight mb-2 line-clamp-2">{r.title}</h3>
-                   
-                   {r.tags && (
-                     <div className="flex flex-wrap gap-2 mb-4">
-                       {r.tags.slice(0, 3).map((t: string) => (
-                         <span key={t} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">#{t}</span>
-                       ))}
-                     </div>
-                   )}
-
-                   <a 
-                     href={r.link} 
-                     target="_blank" 
-                     rel="noopener noreferrer"
-                     className="mt-auto w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl transition-colors font-medium"
-                   >
-                     <span>Read Me</span>
-                   </a>
-                 </div>
-               </div>
-             ))
-           )}
-         </div>
-      </div>
     </div>
   )
 }

@@ -21,6 +21,15 @@ function friendlyAuthError(code?: string, fallback?: string) {
   }
 }
 
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.562 2.684-3.86 2.684-6.616z" fill="#4285F4" fillRule="evenodd"/>
+    <path d="M9 18c2.43 0 4.467-.806 5.956-2.18L12.048 13.56c-.806.54-1.836.86-3.048.86-2.344 0-4.328-1.584-5.036-3.716H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853" fillRule="evenodd"/>
+    <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" fillRule="evenodd"/>
+    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" fillRule="evenodd"/>
+  </svg>
+)
+
 export default function Login() {
   const { user, loading, signInGoogle, signInEmail, resetPassword } = useAuth()
   const navigate = useNavigate()
@@ -142,9 +151,17 @@ export default function Login() {
 
           {/* Alternative option */}
           <div className="mt-4 text-center text-sm text-slate-500">or continue with Google</div>
-          <button type="button" onClick={handleGoogleLogin} disabled={pending} className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 text-white transition-opacity transition-shadow duration-200 hover:opacity-90 hover:shadow-sm active:scale-[.99] disabled:opacity-60">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8c-6.9 0-12.5-5.6-12.5-12.5S17.1 11 24 11c3.2 0 6.2 1.2 8.5 3.3l5.7-5.7C34.7 5.2 29.6 3 24 3C16.8 3 10.3 6.7 6.3 14.7z"/><path fill="#FF3D00" d="m6.3 14.7l6.6 4.8C14.8 16 19.1 13 24 13c3.2 0 6.2 1.2 8.5 3.3l5.7-5.7C34.7 5.2 29.6 3 24 3C16.8 3 10.3 6.7 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.3 0 10.2-2 13.9-5.2l-6.4-5.3C29.9 35.7 27.1 36.6 24 36.6c-5.3 0-9.7-3.3-11.3-8H1.9v5.1C5.6 40.3 14.1 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.2-3.5 5.8-6.7 7.1l6.4 5.3C36.7 42.4 43 37 44.9 29.5c.2-.8.3-1.7.3-2.5c0-1.2-.1-2.3-.3-3.5z"/></svg>
-            Continue with Google
+          <button 
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={pending}
+            className="mt-4 w-full flex items-center justify-center gap-3 bg-white text-[#757575] font-roboto font-medium border border-gray-200 rounded-md px-3 py-3 shadow-sm hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            <div className="bg-white p-0.5 rounded-sm flex items-center justify-center">
+              <GoogleIcon />
+            </div>
+            <span className="text-sm">Sign in with Google</span>
           </button>
 
           {/* Centered primary actions */}
