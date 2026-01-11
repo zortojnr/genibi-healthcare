@@ -46,7 +46,7 @@ const RECOMMENDED_ARTICLES: Resource[] = [
     author: "NEJM",
     date: "2023-08-10",
     content: "Generalized anxiety disorder is characterized by excessive anxiety and worry about a variety of events or activities...",
-    thumbnail: "https://images.unsplash.com/photo-1620147461831-a97b90ad2d7e?auto=format&fit=crop&q=80&w=800"
+    thumbnail: "https://images.unsplash.com/photo-1504192010706-dd7f47e13785?auto=format&fit=crop&q=80&w=800"
   },
   { 
     id: 'rec4',
