@@ -94,11 +94,11 @@ export default function Library() {
   })
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 transition-colors duration-300">
       {/* Header Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">E-Library</h1>
-        <p className="mt-2 text-slate-600 max-w-2xl">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">E-Library</h1>
+        <p className="mt-2 text-slate-600 dark:text-white max-w-2xl">
           Explore our curated collection of mental health resources, articles, and guides.
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function Library() {
             placeholder="Search resources..." 
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border-slate-200 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all placeholder-slate-400"
           />
           <svg className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -123,9 +123,9 @@ export default function Library() {
         <div className="lg:hidden">
           <button 
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-700 font-medium"
+            className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm text-slate-700 dark:text-slate-200 font-medium transition-colors"
           >
-            <span>Filter by Type: <span className="capitalize text-blue-600">{activeTab}</span></span>
+            <span>Filter by Type: <span className="capitalize text-blue-600 dark:text-blue-400">{activeTab}</span></span>
             <svg className={`w-5 h-5 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
@@ -133,13 +133,13 @@ export default function Library() {
           
           {/* Accordion Content */}
           <div className={`mt-2 overflow-hidden transition-all duration-300 ease-in-out ${isFilterOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="bg-white border border-slate-200 rounded-xl p-2 shadow-sm space-y-1">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2 shadow-sm space-y-1">
               {['all', 'article', 'video', 'audio'].map((type) => (
                 <button
                   key={type}
                   onClick={() => { setActiveTab(type as any); setIsFilterOpen(false); }}
                   className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === type ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'
+                    activeTab === type ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                   }`}
                 >
                   {type === 'all' ? 'All Resources' : type.charAt(0).toUpperCase() + type.slice(1) + 's'}
@@ -150,15 +150,15 @@ export default function Library() {
         </div>
 
         {/* Desktop Filters */}
-        <div className="hidden lg:flex gap-2 bg-slate-100 p-1.5 rounded-xl self-start">
+        <div className="hidden lg:flex gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl self-start transition-colors">
           {['all', 'article', 'video', 'audio'].map((type) => (
             <button
               key={type}
               onClick={() => setActiveTab(type as any)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === type 
-                  ? 'bg-white text-blue-700 shadow-sm' 
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
               }`}
             >
               {type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1) + 's'}
@@ -170,26 +170,26 @@ export default function Library() {
       {/* Resource Grid - Fluid Layout */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filtered.map((item) => (
-          <div key={item.id} className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden h-full">
+          <div key={item.id} className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md dark:hover:shadow-slate-900 transition-all duration-300 flex flex-col overflow-hidden h-full">
             {/* Image Container with Aspect Ratio */}
-            <div className="relative w-full aspect-[16/9] bg-slate-100 overflow-hidden">
+            <div className="relative w-full aspect-[16/9] bg-slate-100 dark:bg-slate-900 overflow-hidden">
               {item.thumbnail ? (
                 <img 
                   src={item.thumbnail} 
                   alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-4xl text-slate-300">
+                <div className="w-full h-full flex items-center justify-center text-4xl text-slate-300 dark:text-slate-600">
                   {item.type === 'video' ? '🎬' : item.type === 'audio' ? '🎧' : '📄'}
                 </div>
               )}
               <div className="absolute top-3 left-3">
                 <span className={`px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-md border shadow-sm ${
-                  item.type === 'video' ? 'bg-red-100/90 text-red-700 border-red-200' :
-                  item.type === 'audio' ? 'bg-purple-100/90 text-purple-700 border-purple-200' :
-                  'bg-blue-100/90 text-blue-700 border-blue-200'
+                  item.type === 'video' ? 'bg-red-100/90 dark:bg-red-900/80 text-red-700 dark:text-red-200 border-red-200 dark:border-red-800' :
+                  item.type === 'audio' ? 'bg-purple-100/90 dark:bg-purple-900/80 text-purple-700 dark:text-purple-200 border-purple-200 dark:border-purple-800' :
+                  'bg-blue-100/90 dark:bg-blue-900/80 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-800'
                 }`}>
                   {item.type.toUpperCase()}
                 </span>
@@ -198,33 +198,33 @@ export default function Library() {
 
             {/* Content */}
             <div className="p-5 flex flex-col flex-grow">
-              <h3 className="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {item.title}
               </h3>
               
               <div className="flex flex-wrap gap-2 mb-4">
                 {(item.tags || []).slice(0, 3).map(tag => (
-                  <span key={tag} className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
+                  <span key={tag} className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md">
                     #{tag}
                   </span>
                 ))}
               </div>
 
               {item.content && (
-                <p className="text-sm text-slate-500 mb-4 line-clamp-3 flex-grow">
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-3 flex-grow">
                   {item.content}
                 </p>
               )}
 
-              <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div className="text-xs text-slate-400">
+              <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="text-xs text-slate-400 dark:text-slate-500">
                   {item.date ? new Date(item.date).toLocaleDateString() : 'Recently added'}
                 </div>
                 <a 
                   href={item.link} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 group/link"
+                  className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 group/link"
                 >
                   Read Now
                   <svg className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,13 +238,13 @@ export default function Library() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+        <div className="text-center py-20 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-700 transition-colors">
           <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">No resources found</h3>
-          <p className="text-slate-500">Try adjusting your search or filters</p>
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No resources found</h3>
+          <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters</p>
           <button 
             onClick={() => { setSearch(''); setActiveTab('all'); }}
-            className="mt-6 px-6 py-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+            className="mt-6 px-6 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors"
           >
             Clear Filters
           </button>

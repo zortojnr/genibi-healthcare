@@ -69,50 +69,83 @@ export default function Profile() {
   // Fetch Data
   useEffect(() => {
     let isMounted = true
+    
+    // Check cache first to eliminate delay
+    const cachedProfile = localStorage.getItem(`profile_${user?.uid}`)
+    if (cachedProfile) {
+      try {
+        const parsed = JSON.parse(cachedProfile)
+        setProfileData(parsed)
+        setEditForm(parsed)
+        // If we have cached data, we can stop loading visually, but still fetch in bg
+        setLoading(false) 
+      } catch (e) {
+        console.error("Cache parse error", e)
+      }
+    }
+
     const fetchData = async () => {
       if (!user) {
-        setLoading(false)
+        if (isMounted) setLoading(false)
         return
       }
       
       try {
-        // Timeout Promise
-        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000))
-        
-        // Data Promises
-        const profilePromise = getDoc(doc(db, 'users', user.uid))
-        const aptPromise = getDocs(query(collection(db, 'appointments'), where('userId', '==', user.uid), orderBy('date', 'desc')))
-        const moodPromise = getDocs(query(collection(db, 'moods'), where('userId', '==', user.uid), orderBy('date', 'asc')))
+        // Data Promises - removed Promise.race and increased robustness
+        const profilePromise = getDoc(doc(db, 'users', user.uid)).catch(e => { console.error("Profile fetch error", e); return null; })
+        const aptPromise = getDocs(query(collection(db, 'appointments'), where('userId', '==', user.uid), orderBy('date', 'desc'))).catch(e => { console.error("Apt fetch error", e); return null; })
+        const moodPromise = getDocs(query(collection(db, 'moods'), where('userId', '==', user.uid), orderBy('date', 'asc'))).catch(e => { console.error("Mood fetch error", e); return null; })
 
-        // Race against timeout
-        const [userSnap, aptSnap, moodSnap] = await Promise.race([
-          Promise.all([profilePromise, aptPromise, moodPromise]),
-          timeout
-        ]) as [any, any, any]
+        // Use Promise.all to fetch in parallel, but individual catches prevent total failure
+        const [userSnap, aptSnap, moodSnap] = await Promise.all([profilePromise, aptPromise, moodPromise])
         
         if (!isMounted) return
 
-        const userData = userSnap.exists() ? userSnap.data() : {}
-        
-        const mergedProfile = {
-          displayName: user.displayName || userData.displayName || '',
-          email: user.email || userData.email || '',
-          photoURL: user.photoURL || userData.photoURL || '',
-          phone: userData.phone || '',
-          bio: userData.bio || '',
-          location: userData.location || '',
-          createdAt: user.metadata.creationTime
+        // Handle Profile Data
+        let mergedProfile: UserProfileData = {}
+        if (userSnap && userSnap.exists()) {
+          const userData = userSnap.data()
+          mergedProfile = {
+            displayName: user.displayName || userData.displayName || '',
+            email: user.email || userData.email || '',
+            photoURL: user.photoURL || userData.photoURL || '',
+            phone: userData.phone || '',
+            bio: userData.bio || '',
+            location: userData.location || '',
+            createdAt: user.metadata.creationTime
+          }
+        } else {
+           // Fallback if firestore doc doesn't exist yet
+           mergedProfile = {
+            displayName: user.displayName || '',
+            email: user.email || '',
+            photoURL: user.photoURL || '',
+            createdAt: user.metadata.creationTime
+           }
         }
+        
         setProfileData(mergedProfile)
         setEditForm(mergedProfile)
+        // Update cache
+        localStorage.setItem(`profile_${user.uid}`, JSON.stringify(mergedProfile))
 
-        setAppointments(aptSnap.docs.map((d: any) => ({ id: d.id, ...d.data() } as Appointment)))
-        setMoods(moodSnap.docs.map((d: any) => ({ id: d.id, ...d.data() } as MoodEntry)))
+        // Handle Appointments
+        if (aptSnap) {
+          setAppointments(aptSnap.docs.map((d: any) => ({ id: d.id, ...d.data() } as Appointment)))
+        }
+
+        // Handle Moods
+        if (moodSnap) {
+          setMoods(moodSnap.docs.map((d: any) => ({ id: d.id, ...d.data() } as MoodEntry)))
+        }
 
       } catch (e: any) {
         if (!isMounted) return
         console.error("Error loading profile data:", e)
-        setMsg({ type: 'error', text: e.message === 'Request timed out' ? 'Loading timed out. Please refresh.' : 'Failed to load profile data.' })
+        // Only show error if we have no data at all
+        if (!profileData.email && !cachedProfile) {
+           setMsg({ type: 'error', text: 'Failed to load latest data. Please check your connection.' })
+        }
       } finally {
         if (isMounted) setLoading(false)
       }
