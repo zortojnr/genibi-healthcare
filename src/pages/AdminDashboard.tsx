@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { collection, getDocs, addDoc, updateDoc, doc, query, orderBy, where } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useNavigate } from 'react-router-dom'
-import { adminService, AuditLog } from '../services/adminService'
+import { adminService } from '../services/adminService'
+import type { AuditLog } from '../services/adminService'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
