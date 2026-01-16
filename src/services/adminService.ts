@@ -55,33 +55,45 @@ export const adminService = {
    */
   async login(email: string, password: string): Promise<User> {
     this.checkConfig()
-    const cred = await signInWithEmailAndPassword(auth, email, password)
     
-    // Normalize emails for comparison
-    const normalizedEmail = cred.user.email?.toLowerCase() || ''
-    // Hardcoded check for master admin (avoids DB dependency for main admin)
-    const isMasterAdmin = normalizedEmail === 'genibimentalhealth13@gmail.com'
-
-    if (!isMasterAdmin) {
-      // Check if user has admin role in DB
-      const userDoc = await getDoc(doc(db, ADMIN_COLLECTION, cred.user.uid))
-      if (!userDoc.exists() || userDoc.data()?.role !== 'admin') {
-        await signOut(auth)
-        throw new Error('Unauthorized: User is not an admin')
-      }
-    }
-    
-    // Log login action
-    await this.logAudit('LOGIN', `Admin logged in: ${email}`, cred.user.uid)
-    
-    // Update last login
-    await updateDoc(doc(db, ADMIN_COLLECTION, cred.user.uid), {
-      lastLogin: new Date().toISOString()
-    }).catch(() => {
-      // Ignore update error if doc doesn't exist (master admin might not be in DB yet)
+    // Create a timeout promise that rejects after 15 seconds
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Login request timed out. Please check your network connection.')), 15000)
     })
-    
-    return cred.user
+
+    // The actual login logic
+    const loginPromise = async (): Promise<User> => {
+      const cred = await signInWithEmailAndPassword(auth, email, password)
+      
+      // Normalize emails for comparison
+      const normalizedEmail = cred.user.email?.toLowerCase() || ''
+      // Hardcoded check for master admin (avoids DB dependency for main admin)
+      const isMasterAdmin = normalizedEmail === 'genibimentalhealth13@gmail.com'
+
+      if (!isMasterAdmin) {
+        // Check if user has admin role in DB
+        const userDoc = await getDoc(doc(db, ADMIN_COLLECTION, cred.user.uid))
+        if (!userDoc.exists() || userDoc.data()?.role !== 'admin') {
+          await signOut(auth)
+          throw new Error('Unauthorized: User is not an admin')
+        }
+      }
+      
+      // Log login action
+      await this.logAudit('LOGIN', `Admin logged in: ${email}`, cred.user.uid)
+      
+      // Update last login
+      await updateDoc(doc(db, ADMIN_COLLECTION, cred.user.uid), {
+        lastLogin: new Date().toISOString()
+      }).catch(() => {
+        // Ignore update error if doc doesn't exist (master admin might not be in DB yet)
+      })
+      
+      return cred.user
+    }
+
+    // Race between login logic and timeout
+    return Promise.race([loginPromise(), timeoutPromise])
   },
 
   async logout() {
