@@ -20,8 +20,11 @@ import { auth, db } from '../lib/firebase'
 export interface AdminUser {
   uid: string
   email: string
-  role: 'admin' | 'superadmin'
+  role: 'admin' | 'superadmin' | 'editor' | 'viewer'
+  permissions: string[]
   lastLogin: string
+  lastActivity?: string
+  sessionDuration?: number
 }
 
 export interface AuditLog {
@@ -30,6 +33,18 @@ export interface AuditLog {
   details: string
   performedBy: string
   timestamp: string
+  previousState?: any
+  newState?: any
+  reason?: string
+  ipAddress?: string
+}
+
+export interface AnalyticsMetrics {
+  totalUsers: number
+  activeUsers24h: number
+  totalAppointments: number
+  pendingAppointments: number
+  systemHealth: number
 }
 
 const ADMIN_COLLECTION = 'users' // Assuming roles are stored in users collection
@@ -104,7 +119,7 @@ export const adminService = {
   /**
    * Log administrative actions for security auditing
    */
-  async logAudit(action: string, details: string, userId?: string) {
+  async logAudit(action: string, details: string, userId?: string, metadata?: { previousState?: any, newState?: any, reason?: string }) {
     if (!auth || !db) return
     try {
       const currentUser = auth.currentUser
@@ -112,12 +127,57 @@ export const adminService = {
         action,
         details,
         performedBy: userId || currentUser?.email || 'system',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        ...metadata
       })
     } catch (error) {
       console.error('Failed to write audit log', error)
       // We don't throw here to avoid blocking the main action, but in high security apps we might.
     }
+  },
+
+  /**
+   * Get System Analytics
+   */
+  async getAnalytics(): Promise<AnalyticsMetrics> {
+    // In a real app, this would be a server-side aggregation or cached document
+    // For now, we fetch counts efficiently
+    const usersSnap = await getDocs(collection(db, 'users'))
+    const aptSnap = await getDocs(collection(db, 'appointments'))
+    
+    const now = new Date()
+    const activeUsers = usersSnap.docs.filter(d => {
+      const lastLogin = d.data().lastLogin
+      if (!lastLogin) return false
+      return (now.getTime() - new Date(lastLogin).getTime()) < 24 * 60 * 60 * 1000
+    }).length
+
+    const pendingApts = aptSnap.docs.filter(d => d.data().status === 'pending').length
+
+    return {
+      totalUsers: usersSnap.size,
+      activeUsers24h: activeUsers,
+      totalAppointments: aptSnap.size,
+      pendingAppointments: pendingApts,
+      systemHealth: 98 // Mock metric
+    }
+  },
+
+  /**
+   * Update User Permissions (RBAC)
+   */
+  async updateUserRole(uid: string, role: string, permissions: string[], reason: string) {
+    const userRef = doc(db, 'users', uid)
+    const userSnap = await getDoc(userRef)
+    const previousState = userSnap.data()
+
+    await updateDoc(userRef, { role, permissions })
+    
+    await this.logAudit('UPDATE_ROLE', `Updated role for user ${uid}`, undefined, {
+      previousState: { role: previousState?.role, permissions: previousState?.permissions },
+      newState: { role, permissions },
+      reason
+    })
   },
 
   /**
