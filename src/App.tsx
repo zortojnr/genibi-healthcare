@@ -1,13 +1,16 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import NavBar from './components/NavBar'
-import { Suspense, lazy, useEffect } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from './lib/firebase'
 
 // Eager load critical path
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import AdminLogin from './pages/AdminLogin'
 
 // Lazy load feature modules
 const Chat = lazy(() => import('./pages/Chat'))
@@ -46,8 +49,39 @@ function FullAccess({ children }: { children: ReactNode }) {
 
 function AdminRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
-  if (loading) return <LoadingSpinner />
-  if (!user || user.email !== ADMIN_EMAIL) return <Navigate to="/" replace />
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    async function checkAdmin() {
+      if (!user) {
+        setIsAdmin(false)
+        return
+      }
+      
+      // Keep backward compatibility
+      if (user.email === ADMIN_EMAIL) {
+        setIsAdmin(true)
+        return
+      }
+
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid))
+        setIsAdmin(snap.exists() && snap.data()?.role === 'admin')
+      } catch (e) {
+        console.error('Admin check failed', e)
+        setIsAdmin(false)
+      }
+    }
+
+    if (!loading) {
+      checkAdmin()
+    }
+  }, [user, loading])
+
+  if (loading || isAdmin === null) return <LoadingSpinner />
+  if (!user) return <Navigate to="/admin" replace />
+  if (!isAdmin) return <Navigate to="/" replace />
+  
   return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
 }
 
@@ -59,15 +93,21 @@ function ScrollToTop() {
 
 export default function App() {
   const { user } = useAuth()
+  const location = useLocation()
+  const isAdminPage = location.pathname.startsWith('/admin')
 
   return (
     <div className="min-h-screen">
-      {user && <NavBar />}
+      {user && !isAdminPage && <NavBar />}
       <ScrollToTop />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" replace />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         
         {/* Lazy loaded routes wrapped in Suspense via Protected/AdminRoute */}
         <Route path="/chat" element={<Protected><Chat /></Protected>} />
@@ -75,7 +115,6 @@ export default function App() {
         <Route path="/appointments" element={<Protected><FullAccess><Appointments /></FullAccess></Protected>} />
         <Route path="/mood" element={<Protected><FullAccess><MoodTracker /></FullAccess></Protected>} />
         <Route path="/medications" element={<Protected><FullAccess><Medications /></FullAccess></Protected>} />
-        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/profile" element={<Protected><Profile /></Protected>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
