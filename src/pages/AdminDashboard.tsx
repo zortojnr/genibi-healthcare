@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { adminService } from '../services/adminService'
-import { useAuth } from '../contexts/AuthContext'
 
 // Import Sub-Components
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard'

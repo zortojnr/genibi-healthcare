@@ -20,6 +20,10 @@ export default function AuditLogsViewer() {
     }
   }
 
+  if (loading) {
+    return <div className="p-8 text-center text-slate-500">Loading security logs...</div>
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
