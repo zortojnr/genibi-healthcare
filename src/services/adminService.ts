@@ -71,9 +71,9 @@ export const adminService = {
   async login(email: string, password: string): Promise<User> {
     this.checkConfig()
     
-    // Create a timeout promise that rejects after 15 seconds
+    // Create a timeout promise that rejects after 30 seconds (increased from 15s)
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Login request timed out. Please check your network connection.')), 15000)
+      setTimeout(() => reject(new Error('Login request timed out. Please check your network connection.')), 30000)
     })
 
     // The actual login logic
@@ -94,15 +94,14 @@ export const adminService = {
         }
       }
       
-      // Log login action
-      await this.logAudit('LOGIN', `Admin logged in: ${email}`, cred.user.uid)
-      
-      // Update last login
-      await updateDoc(doc(db, ADMIN_COLLECTION, cred.user.uid), {
-        lastLogin: new Date().toISOString()
-      }).catch(() => {
-        // Ignore update error if doc doesn't exist (master admin might not be in DB yet)
-      })
+      // Non-blocking side effects: Log action and update timestamp
+      // We do NOT await these for the user return to speed up UX
+      Promise.all([
+        this.logAudit('LOGIN', `Admin logged in: ${email}`, cred.user.uid),
+        updateDoc(doc(db, ADMIN_COLLECTION, cred.user.uid), {
+          lastLogin: new Date().toISOString()
+        }).catch(() => { /* Ignore update error */ })
+      ]).catch(err => console.error('Background login tasks failed', err))
       
       return cred.user
     }
