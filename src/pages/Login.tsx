@@ -103,7 +103,7 @@ export default function Login() {
 
   if (introLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center transition-colors duration-300">
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: [0, -12, 0] }}
@@ -117,29 +117,29 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-6 py-12">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center px-6 py-12 transition-colors duration-300">
       {/* background accents */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 0.6, scale: 1 }} transition={{ duration: 1 }}
-          className="w-72 h-72 md:w-96 md:h-96 rounded-full bg-mint-200 opacity-30 blur-xl absolute -top-16 -left-20" />
+          className="w-72 h-72 md:w-96 md:h-96 rounded-full bg-mint-200 dark:bg-emerald-900/20 opacity-30 blur-xl absolute -top-16 -left-20" />
         <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 0.5, scale: 1 }} transition={{ duration: 1 }}
-          className="w-80 h-80 md:w-[28rem] md:h-[28rem] rounded-full bg-lavender-200 opacity-30 blur-xl absolute bottom-0 right-0" />
+          className="w-80 h-80 md:w-[28rem] md:h-[28rem] rounded-full bg-lavender-200 dark:bg-indigo-900/20 opacity-30 blur-xl absolute bottom-0 right-0" />
       </div>
 
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-        className="w-full max-w-md bg-white rounded-2xl shadow-xl border p-8">
+        className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border dark:border-slate-700 p-8 transition-colors duration-300">
         {/* brand text */}
         <h1 className="text-center text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-600 mb-6">GENIBI</h1>
 
         {/* Email form */}
         <form className="grid gap-4" onSubmit={handleEmailLogin}>
          <div className="grid gap-2">
-            <label htmlFor="email" className="text-sm font-medium text-slate-700">Email</label>
-            <input id="email" type="email" autoComplete="email" autoFocus value={email} onChange={e=>setEmail(e.target.value)} placeholder="Enter your email address" className="w-full px-3 py-3 rounded-xl border placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow transition-colors duration-200" />
-            <label htmlFor="password" className="text-sm font-medium text-slate-700">Password</label>
+            <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+            <input id="email" type="email" autoComplete="email" autoFocus value={email} onChange={e=>setEmail(e.target.value)} placeholder="Enter your email address" className="w-full px-3 py-3 rounded-xl border dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow transition-colors duration-200" />
+            <label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
             <div className="relative">
-              <input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter your password" className="w-full px-3 py-3 rounded-xl border placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 transition-shadow transition-colors duration-200" />
-              <button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} onClick={() => setShowPassword(v=>!v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-900 cursor-pointer transition-opacity duration-200 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded">
+              <input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter your password" className="w-full px-3 py-3 rounded-xl border dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 transition-shadow transition-colors duration-200" />
+              <button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} onClick={() => setShowPassword(v=>!v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-opacity duration-200 hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded">
                 {showPassword ? (
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6c-5 0-9.27 3.11-11 7.5C2.73 17.89 7 21 12 21s9.27-3.11 11-7.5C21.27 9.11 17 6 12 6m0 13a9.77 9.77 0 0 1-8.82-5.5A9.76 9.76 0 0 1 12 8a9.76 9.76 0 0 1 8.82 5.5A9.77 9.77 0 0 1 12 19m0-10a4.5 4.5 0 1 0 4.5 4.5A4.5 4.5 0 0 0 12 9"/></svg>
                 ) : (
@@ -150,12 +150,12 @@ export default function Login() {
           </div>
 
           {/* Alternative option */}
-          <div className="mt-4 text-center text-sm text-slate-500">or continue with Google</div>
+          <div className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">or continue with Google</div>
           <button 
             type="button"
             onClick={handleGoogleLogin}
             disabled={pending}
-            className="mt-4 w-full flex items-center justify-center gap-3 bg-white text-[#757575] font-roboto font-medium border border-gray-200 rounded-md px-3 py-3 shadow-sm hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+            className="mt-4 w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-700 text-[#757575] dark:text-slate-200 font-roboto font-medium border border-gray-200 dark:border-slate-600 rounded-md px-3 py-3 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-600 active:bg-gray-100 dark:active:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
             style={{ fontFamily: 'Roboto, sans-serif' }}
           >
             <div className="bg-white p-0.5 rounded-sm flex items-center justify-center">
@@ -174,13 +174,13 @@ export default function Login() {
 
           {/* Forgot password link */}
           <div className="mt-4 text-center">
-            <button type="button" onClick={handleResetPassword} className="text-blue-600 hover:underline text-sm transition-opacity duration-200 hover:opacity-80">Forgot password?</button>
+            <button type="button" onClick={handleResetPassword} className="text-blue-600 dark:text-blue-400 hover:underline text-sm transition-opacity duration-200 hover:opacity-80">Forgot password?</button>
           </div>
         </form>
 
         {/* hint below form */}
-        <div className="mt-4 text-center text-sm text-slate-600">
-        Don't have an account? <button type="button" onClick={() => navigate('/register')} className="text-blue-600 hover:underline transition-opacity duration-200 hover:opacity-80">Register</button>
+        <div className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
+        Don't have an account? <button type="button" onClick={() => navigate('/register')} className="text-blue-600 dark:text-blue-400 hover:underline transition-opacity duration-200 hover:opacity-80">Register</button>
         </div>
 
 

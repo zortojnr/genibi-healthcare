@@ -31,12 +31,12 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/70 dark:border-slate-800 backdrop-blur p-6 relative overflow-hidden transition-colors">
+    <div className="mx-auto max-w-6xl px-4 py-10 transition-colors duration-300">
+      <div className="rounded-2xl border bg-white/70 dark:bg-slate-800/80 dark:border-slate-700 backdrop-blur p-6 relative overflow-hidden transition-colors duration-300 shadow-sm dark:shadow-slate-900/50">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-10">
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Welcome, {name}</h1>
           <a href="tel:+2348060270792" aria-label="Call Support +234 806 027 0792"
-             className="inline-flex items-center gap-2 border bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 dark:border-blue-800 px-3 py-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-300 transition-colors">
+             className="inline-flex items-center gap-2 border bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100 dark:border-blue-800 px-3 py-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-300 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.09 2h3a2 2 0 0 1 2 1.72c.12.81.3 1.6.54 2.36a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.71-1.08a2 2 0 0 1 2.11-.45c.76.24 1.55.42 2.36.54A2 2 0 0 1 22 16.92z"/></svg>
             <span className="font-medium">Support: +234 806 027 0792</span>
           </a>

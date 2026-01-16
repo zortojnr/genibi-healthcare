@@ -56,11 +56,19 @@ export const adminService = {
   async login(email: string, password: string): Promise<User> {
     this.checkConfig()
     const cred = await signInWithEmailAndPassword(auth, email, password)
-    // Check if user has admin role
-    const userDoc = await getDoc(doc(db, ADMIN_COLLECTION, cred.user.uid))
-    if (!userDoc.exists() || userDoc.data()?.role !== 'admin') {
-      await signOut(auth)
-      throw new Error('Unauthorized: User is not an admin')
+    
+    // Normalize emails for comparison
+    const normalizedEmail = cred.user.email?.toLowerCase() || ''
+    // Hardcoded check for master admin (avoids DB dependency for main admin)
+    const isMasterAdmin = normalizedEmail === 'genibimentalhealth13@gmail.com'
+
+    if (!isMasterAdmin) {
+      // Check if user has admin role in DB
+      const userDoc = await getDoc(doc(db, ADMIN_COLLECTION, cred.user.uid))
+      if (!userDoc.exists() || userDoc.data()?.role !== 'admin') {
+        await signOut(auth)
+        throw new Error('Unauthorized: User is not an admin')
+      }
     }
     
     // Log login action
@@ -69,6 +77,8 @@ export const adminService = {
     // Update last login
     await updateDoc(doc(db, ADMIN_COLLECTION, cred.user.uid), {
       lastLogin: new Date().toISOString()
+    }).catch(() => {
+      // Ignore update error if doc doesn't exist (master admin might not be in DB yet)
     })
     
     return cred.user

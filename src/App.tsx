@@ -58,8 +58,8 @@ function AdminRoute({ children }: { children: ReactNode }) {
         return
       }
       
-      // Keep backward compatibility
-      if (user.email === ADMIN_EMAIL) {
+      // Keep backward compatibility & strict master admin check
+      if (user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
         setIsAdmin(true)
         return
       }
