@@ -96,6 +96,12 @@ export default function MoodTracker() {
       setMsg({ type: 'error', text: 'You have already logged your mood for today.' })
       return
     }
+
+    if (!moodDirection || !moodSource || !note.trim()) {
+      setMsg({ type: 'error', text: 'Please fill in all mood details (Direction, Source, and Note).' })
+      return
+    }
+
     setSaving(true)
     const entry: MoodEntry = {
       date: today,
