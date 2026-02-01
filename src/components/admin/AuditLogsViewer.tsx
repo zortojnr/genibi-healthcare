@@ -20,6 +20,18 @@ export default function AuditLogsViewer() {
     }
   }
 
+  // Moved outside effect or define here
+  function formatAction(action: string) {
+    switch(action) {
+      case 'LOGIN': return 'User Login'
+      case 'UPDATE_ROLE': return 'Role Updated'
+      case 'PROMOTE_ADMIN': return 'Admin Promoted'
+      case 'DEMOTE_ADMIN': return 'Admin Demoted'
+      case 'ASSIGN_MED': return 'Medication Assigned'
+      default: return action.replace(/_/g, ' ')
+    }
+  }
+
   if (loading) {
     return <div className="p-8 text-center text-slate-500">Loading security logs...</div>
   }
@@ -51,12 +63,12 @@ export default function AuditLogsViewer() {
                   </td>
                   <td className="p-3 font-medium">
                     <span className="px-2 py-1 bg-slate-100 dark:bg-slate-900 rounded text-xs border dark:border-slate-600">
-                      {log.action}
+                      {formatAction(log.action)}
                     </span>
                   </td>
                   <td className="p-3 max-w-md truncate" title={log.details}>{log.details}</td>
                   <td className="p-3 font-mono text-xs">{log.performedBy}</td>
-                  <td className="p-3 italic text-slate-500">{log.reason || '-'}</td>
+                  <td className="p-3 italic text-slate-500">{log.reason || 'No reason provided'}</td>
                 </tr>
               ))}
             </tbody>

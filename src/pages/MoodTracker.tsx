@@ -24,9 +24,9 @@ export default function MoodTracker() {
   const [msg, setMsg] = useState<{type: 'success' | 'error', text: string} | null>(null)
   
   // New mood tracking fields
-  const [moodDirection, setMoodDirection] = useState<string>('Neutral')
+  const [moodDirection, setMoodDirection] = useState<string>('')
   const [moodIntensity, setMoodIntensity] = useState<number>(3)
-  const [moodSource, setMoodSource] = useState<string>('Not sure')
+  const [moodSource, setMoodSource] = useState<string>('')
 
   const uid = user?.uid
 
@@ -143,12 +143,13 @@ export default function MoodTracker() {
         </div>
 
         <div className="mt-4">
-          <label className="text-sm text-slate-700 dark:text-slate-300 block mb-2">Mood direction</label>
+          <label className="text-sm text-slate-700 dark:text-slate-300 block mb-2">Mood direction <span className="text-red-500">*</span></label>
           <select 
             value={moodDirection} 
             onChange={e=>setMoodDirection(e.target.value)} 
             className="w-full px-3 py-2 rounded-lg border bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500"
           >
+            <option value="" disabled>Select direction</option>
             <option>Positive</option>
             <option>Neutral</option>
             <option>Negative</option>

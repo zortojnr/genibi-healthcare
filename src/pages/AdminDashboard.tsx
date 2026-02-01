@@ -6,6 +6,11 @@ import { adminService } from '../services/adminService'
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard'
 import UserManagement from '../components/admin/UserManagement'
 import AuditLogsViewer from '../components/admin/AuditLogsViewer'
+import UserLedger from '../components/admin/UserLedger'
+import AdminAppointments from '../components/admin/AdminAppointments'
+import AdminMedications from '../components/admin/AdminMedications'
+import AdminLibrary from '../components/admin/AdminLibrary'
+import AdminReferrals from '../components/admin/AdminReferrals'
 
 // Existing logic for other tabs kept inline or can be refactored further
 // For brevity, we keep the original logic for legacy tabs but switch to new components for enhanced features
@@ -47,7 +52,7 @@ function useIdleTimeout(timeoutMs = 15 * 60 * 1000) {
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
-  const [tab, setTab] = useState<'analytics' | 'users' | 'audit' | 'appointments' | 'library' | 'medications' | 'referrals'>('analytics')
+  const [tab, setTab] = useState<'analytics' | 'users' | 'ledger' | 'audit' | 'appointments' | 'library' | 'medications' | 'referrals'>('analytics')
   
   // Activate security timeout
   useIdleTimeout(15 * 60 * 1000) // 15 minutes
@@ -107,19 +112,12 @@ export default function AdminDashboard() {
         <main className="min-h-[600px] transition-all duration-300">
           {tab === 'analytics' && <AnalyticsDashboard />}
           {tab === 'users' && <UserManagement />}
+          {tab === 'ledger' && <UserLedger />}
           {tab === 'audit' && <AuditLogsViewer />}
-          
-          {/* Fallback for legacy tabs - displaying a placeholder or re-implementing if needed. 
-              Ideally, we'd move the huge logic blocks from the original file into components like <AppointmentsManager /> 
-              For this turn, we acknowledge the architectural shift. 
-           */}
-          {['appointments', 'library', 'medications', 'referrals'].includes(tab) && (
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-xl border dark:border-slate-700 text-center">
-              <h3 className="text-lg font-medium dark:text-white">Module: {tab.charAt(0).toUpperCase() + tab.slice(1)}</h3>
-              <p className="text-slate-500 mt-2">This module is being migrated to the new secure architecture.</p>
-              <p className="text-xs text-slate-400 mt-4">(Functionality temporarily preserved in previous version code)</p>
-            </div>
-          )}
+          {tab === 'appointments' && <AdminAppointments />}
+          {tab === 'medications' && <AdminMedications />}
+          {tab === 'library' && <AdminLibrary />}
+          {tab === 'referrals' && <AdminReferrals />}
         </main>
       </div>
     </div>

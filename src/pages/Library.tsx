@@ -52,7 +52,7 @@ const RECOMMENDED_ARTICLES: Resource[] = [
     id: 'rec4',
     title: 'Mental Health in Students', 
     type: 'article', 
-    link: '#', 
+    link: 'https://www.accreditedschoolsonline.org/resources/student-mental-health-resources/', 
     tags: ['students', 'awareness'],
     author: "Research Initiative",
     date: "2024-02-01",

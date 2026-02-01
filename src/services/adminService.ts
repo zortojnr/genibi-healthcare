@@ -140,9 +140,13 @@ export const adminService = {
    */
   async getAnalytics(): Promise<AnalyticsMetrics> {
     // In a real app, this would be a server-side aggregation or cached document
-    // For now, we fetch counts efficiently
     const usersSnap = await getDocs(collection(db, 'users'))
     const aptSnap = await getDocs(collection(db, 'appointments'))
+    
+    // Calculate System Health based on recent error logs
+    // If > 5 error logs in last 24h, health drops
+    // Note: 'action' might not be 'ERROR' in current logs, using simple mock for now based on prompt "Define what it measures"
+    // Let's define it as: 100% - (pending appointments > 10 ? 10 : 0)
     
     const now = new Date()
     const activeUsers = usersSnap.docs.filter(d => {

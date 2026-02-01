@@ -3,6 +3,8 @@ import { useAuth } from "../contexts/AuthContext"
 import { useEffect, useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { ADMIN_EMAIL } from "../lib/admin"
+import { doc, addDoc, collection, updateDoc } from 'firebase/firestore'
+import { auth, db } from '../lib/firebase'
 
 function friendlyAuthError(code?: string, fallback?: string) {
   switch (code) {
@@ -91,9 +93,32 @@ export default function Login() {
     try {
       setPending(true)
       await signInEmail(email, password)
+      
+      // Task 4: User Ledger - Log Login
+      try {
+        const currentUser = auth.currentUser
+        if (currentUser) {
+          // Log to user_ledger collection
+          await addDoc(collection(db, 'user_ledger'), {
+             uid: currentUser.uid,
+             email: currentUser.email,
+             timestamp: new Date().toISOString(),
+             action: 'LOGIN',
+             role: 'user' // Default, will be refined by admin
+          })
+          // Update last login on user profile
+          await updateDoc(doc(db, 'users', currentUser.uid), {
+            lastLogin: new Date().toISOString()
+          }).catch(() => {}) // Ignore if user doc doesn't exist yet
+        }
+      } catch (logErr) {
+        console.warn('Failed to log user login', logErr)
+      }
+
       setMsg('Welcome back!')
       setMsgType('success')
     } catch (e: any) {
+
       setMsg(friendlyAuthError(e?.code, e?.message))
       setMsgType('error')
     } finally {

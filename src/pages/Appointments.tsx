@@ -14,18 +14,53 @@ export default function Appointments() {
     if (!user) return
     setSaving(true)
     try {
-      await addDoc(collection(db, 'appointments'), {
+      // 1. Create Appointment Record
+      const appointmentData = {
         userId: user.uid,
+        userEmail: user.email,
         date,
         type,
         CFID_reference: ref,
         status: 'pending',
         bookedAt: new Date().toISOString()
+      }
+      
+      const docRef = await addDoc(collection(db, 'appointments'), appointmentData)
+
+      // 2. Dual Notification System (Simulated via Firestore Collections)
+      
+      // Notify Admin Dashboard
+      await addDoc(collection(db, 'notifications'), {
+        type: 'new_appointment',
+        message: `New appointment request from ${user.email}`,
+        read: false,
+        timestamp: new Date().toISOString(),
+        relatedId: docRef.id
       })
+
+      // Send Email (via Mail Collection for Extension)
+      await addDoc(collection(db, 'mail'), {
+        to: user.email,
+        message: {
+          subject: 'Appointment Request Received - Genibi',
+          text: `Dear User, your appointment request for ${date} has been received. Reference: ${ref}. We will confirm shortly.`
+        }
+      }).catch(e => console.warn('Email trigger failed', e)) // Non-blocking
+
+      // Send Admin Email (via Mail Collection)
+      await addDoc(collection(db, 'mail'), {
+        to: 'genibimentalhealth13@gmail.com',
+        message: {
+          subject: 'New Appointment Booking',
+          text: `New booking from ${user.email} for ${date}. Type: ${type}. Ref: ${ref}.`
+        }
+      }).catch(e => console.warn('Admin email trigger failed', e))
+
       setDate('')
       alert("Appointment has been booked. Your request is being processed and you will be contacted.")
     } catch (e) {
       console.error('Failed to book appointment', e)
+      alert("Failed to book appointment. Please try again.")
     } finally {
       setSaving(false)
     }

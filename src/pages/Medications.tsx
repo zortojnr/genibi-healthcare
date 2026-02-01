@@ -128,10 +128,17 @@ END:VCALENDAR`
       snapshot.forEach(doc => {
         items.push({ id: doc.id, ...doc.data() } as Medication)
       })
+      // Client-side sort to avoid missing index issues
+      items.sort((a, b) => {
+        const dateA = a.assignedAt ? new Date(a.assignedAt).getTime() : 0
+        const dateB = b.assignedAt ? new Date(b.assignedAt).getTime() : 0
+        return dateB - dateA
+      })
       setMeds(items)
       setLoading(false)
     }, (error) => {
       console.error("Error fetching meds:", error)
+      setMsg({ type: 'error', text: 'Failed to load medications. Check your connection.' })
       setLoading(false)
     })
 

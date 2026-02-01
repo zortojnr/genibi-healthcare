@@ -7,6 +7,7 @@ interface User {
   role: string
   displayName?: string
   lastLogin?: string
+  createdAt?: string
   permissions?: string[]
 }
 
